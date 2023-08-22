@@ -1,0 +1,15 @@
+Here are some opportunities for tactical, one-time changes that can be
+automated:
+
+Application of standards or conventions:
+o This can be a standard Network Time Protocol (NTP) server for all network devices or
+ensuring the native VLAN is set correctly on all trunk ports.
+
+Correcting errors:
+o If there are known problems on the network that have been put off because of the scale of the
+change, lack of priority, tedium, understanding of the amount of manual effort required, lack
+of resources, or waiting for an automated solution to arrive.
+
+Net-new projects:
+o Draw a line in the sand and try to commit to automating all net-new project requirements that
+require changes to the network
