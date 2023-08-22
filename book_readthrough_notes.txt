@@ -1,3 +1,100 @@
+-------
+Page 12
+-------
+The following is a brief list of key problems inherent to the legacy approach:
+
+- No source of truth.
+o Networks often lack a source of truth: an authoritative artifact that can be referenced for what
+the desired working configuration of a device or set of devices is.
+o Often decentralized in project folders, file shares, Visio diagrams, Excel spreadsheets, and
+local drives.
+o Sometimes the network itself is the source of truth: the running-configurations of each device
+is the only source of information about the network.
+
+- Documentation.
+o Documentation tends to fall out of date and requires manual updates when changes are made
+to the network.
+o Often missed or overlooked.
+o Often decentralized.
+o Rarely referenced by network operators due to above complications.
+
+- Scale.
+o Networks are not getting smaller. Internet of Things (IoT), wireless access points, IP phones,
+rapid WAN expansion, cloud adoption, and larger data centers are leading to massive
+enterprise networks.
+o CLI simply does not scale unless more people are added to manage the network.
+
+- Error-prone.
+o Mistakes happen with manual changes.
+o Requires orchestration of complex changes ensuring the correct order of device and
+command entry.
+o Requires work to be done several times per change. Plan, document, submit, and implement
+into production.
+o Sometimes approval processes or operational mistakes occur where changes are completed
+out of order from when they were submitted, causing overwrites or outages.
+
+- Large-scale changes.
+o Deployment of new features often takes a very long time because of scale or complexity.
+o New business requirements and device types connecting to the network may require QoS
+policy changes leading to rewrite the QoS policy for every device.
+o Some changes are avoided because the effort required to make a correction or deploy a
+feature is too great.
+
+- Limitations of available alternatives.
+o Aside from CLI or an NMS there are very few alternatives to managing a network.
+o Newer, intent-based solutions have only recently immerged with little proven capability.
+
+- Talent.
+o The complexity of networks has grown along with their size and scale. Virtualization,
+multicast, QoS, STP, routing, routing protocols, cloud, security, firewalls, wireless, voice,
+video, VSS, HSRP, VPN, 802.1x, along with increasingly complicated commands to gather
+information.
+o Staffing challenges such as finding certified IT staff or expanding network operations head
+count. Every change to the network becomes a challenge as the complexity increases.
+
+- Cost.
+o Downtime and change window requirements.
+o Overtime requirements.
+o Large network operations staffing requirements.
+
+-------
+Page 15
+-------
+Understand the new processes and tools involved in network automation such as:
+
+- Begin using TFS:
+o Work items are created to identify, assign, and track progress on code development.
+o Distributed teams are able to easily collaborate on shared work items.
+o A centralized repository containing the Ansible playbooks as well as the resulting output
+starts to evolve.
+
+- Implement a branching strategy:
+o A single, authoritative master branch represents the known working state and
+configuration of the network.
+o The master branch is protected. Changes are never made directly to the master branch.
+o A working branch per change is created. Developers perform Git commits often within a
+working branch.
+o Approved pull requests are used to merge tested code from working branches into the
+master branch.
+
+- Version control is established on information gathering Ansible playbooks:
+o In concert with the branching strategy version control becomes apparent.
+o As Ansible playbooks are refactored over time TFS will contain the change and version
+history.
+o In addition to Ansible development skills, operators start to familiarize themselves with
+Git.
+
+- Playbook library:
+o Network engineers can work with the network operations team to find the most common
+manual commands used for network reconnaissance.
+o These commands are transformed into automated playbooks that operations can start
+using to troubleshoot or gather information from the network.
+o Working playbooks are easily cloned, refactored, and added to the library by operators or
+engineers.
+
+-------
+Page 16
+-------
 Here are some opportunities for tactical, one-time changes that can be
 automated:
 
