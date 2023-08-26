@@ -124,3 +124,10 @@ Page 26
 
 Use Ansible check and diff modes
 https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_checkmode.html
+
+-------
+Page 27
+-------
+
+Ansible playbook tags
+https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_tags.html
