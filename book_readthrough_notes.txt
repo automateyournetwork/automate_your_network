@@ -110,3 +110,10 @@ of resources, or waiting for an automated solution to arrive.
 Net-new projects:
 o Draw a line in the sand and try to commit to automating all net-new project requirements that
 require changes to the network
+
+-------
+Page 23
+-------
+
+PPDIOO
+https://www.ciscopress.com/articles/article.asp?p=1608131&seqNum=3
