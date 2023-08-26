@@ -117,3 +117,10 @@ Page 23
 
 PPDIOO
 https://www.ciscopress.com/articles/article.asp?p=1608131&seqNum=3
+
+-------
+Page 26
+-------
+
+Use Ansible check and diff modes
+https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_checkmode.html
