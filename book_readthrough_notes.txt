@@ -131,3 +131,17 @@ Page 27
 
 Ansible playbook tags
 https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_tags.html
+
+-------
+Page 40
+-------
+
+Git branching guide
+https://learn.microsoft.com/en-us/azure/devops/repos/git/git-branching-guidance?view=azure-devops&viewFallbackFrom=vsts
+
+-------
+Page 41
+-------
+
+interactive git branching guide
+https://learngitbranching.js.org/
