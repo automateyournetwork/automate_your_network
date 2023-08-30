@@ -1,0 +1,50 @@
+---
+
+global_campus_defaults:
+  enable_secret: $1$pdQG$0WzLBXV98voWIUEdIiLm11
+
+  domain: ayn.com
+
+  snmp_communities:
+    readonly:
+      type: "RO 1"
+
+    rewrite:
+      type: "RW 1"
+
+  native_vlan: "99"
+
+  snmp_hosts:
+     10.10.100.25:
+       communities:
+         - RO
+         - RW
+
+     10.10.100.26:
+       communities:
+         - RW
+
+  logging_hosts:
+    - 10.10.100.25
+    - 10.10.100.26
+    
+global_dhcp_servers:
+  prod:
+    - 10.10.100.2
+    - 10.10.100.3
+
+  dev:
+    - 10.10.200.2
+    - 10.10.200.3
+    
+global_campus_access_lists:
+    1:
+      permit:
+        - 10.10.100.50
+        - 10.10.100.51
+      deny: 
+        - "  any log"
+
+    10:
+      permit:
+        - any

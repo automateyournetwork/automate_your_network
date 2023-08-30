@@ -1,0 +1,55 @@
+{%  if platform_interfaces is defined %}
+{%      for platform_interface in platform_interfaces %}
+interface {{ platform_interface }}
+{%          if platform_interfaces[platform_interface][inventory_hostname].description is defined %}
+  description {{ platform_interfaces[platform_interface][inventory_hostname].description }}
+{%          endif %}
+{%          if platform_interfaces[platform_interface][inventory_hostname].trunk is defined %}
+  switchport mode trunk 
+  switchport trunk native vlan {{ global_dc_defaults.native_vlan }}
+  switchport trunk allowed vlan {{ platform_interfaces[platform_interface][inventory_hostname].trunk.allowed_vlan }}
+  spanning-tree port type edge trunk
+{%          else %}
+{%              if platform_interfaces[platform_interface][inventory_hostname].private_vlan_trunk_promiscuous is defined %}
+  switchport mode private-vlan trunk promiscuous
+  switchport trunk allowed vlan none
+  switchport private-vlan trunk allowed vlan {{ platform_interfaces[platform_interface][inventory_hostname].private_vlan_trunk_promiscuous.allowed_vlan }}
+  switchport private-vlan mapping trunk {{ platform_interfaces[platform_interface][inventory_hostname].private_vlan_trunk_promiscuous.mapping }}
+{%              else %}
+{%                  if platform_interfaces[platform_interface][inventory_hostname].private_vlan is defined %}
+  switchport mode private-vlan host
+  switchport private-vlan host-association {{ platform_interfaces[platform_interface][inventory_hostname].private_vlan.associate }}
+{%                  else %}
+{%                      if platform_interfaces[platform_interface][inventory_hostname].vlan is defined %}
+  switchport access vlan {{ platform_interfaces[platform_interface][inventory_hostname].vlan }}
+{%                      endif %}
+{%                  endif %}
+{%              endif %}
+{%          endif %}
+{%          if platform_interfaces[platform_interface][inventory_hostname].service_policy is defined %}
+  service-policy type queuing input {{ platform_interfaces[platform_interface][inventory_hostname].service_policy.input }}
+  service-policy type queuing output {{ platform_interfaces[platform_interface][inventory_hostname].service_policy.output }}
+{%          endif %}
+{%          if platform_interfaces[platform_interface][inventory_hostname].ip_address is defined %}
+  ip address {{ platform_interfaces[platform_interface][inventory_hostname].ip_address }}
+{%          endif %}
+{%          if platform_interfaces[platform_interface][inventory_hostname].speed is defined %}
+  speed {{ platform_interfaces[platform_interface][inventory_hostname].speed }}
+{%          endif %}
+{%          if platform_interfaces[platform_interface][inventory_hostname].vrf is defined %}
+  vrf member {{ platform_interfaces[platform_interface][inventory_hostname].vrf }}
+{%          endif %}
+{%          if platform_interfaces[platform_interface][inventory_hostname].monitor is defined %}
+{%              if platform_interfaces[platform_interface][inventory_hostname].monitor == true %}
+  switchport monitor
+{%              endif %}
+{%          endif %}
+{%          if platform_interfaces[platform_interface][inventory_hostname].state_enabled is defined %}
+{%              if platform_interfaces[platform_interface][inventory_hostname].state_enabled == true %}
+  no shutdown
+{%              else %}
+  shutdown
+{%              endif %}
+{%          endif %}
+{%      endfor %}
+{%  endif %}

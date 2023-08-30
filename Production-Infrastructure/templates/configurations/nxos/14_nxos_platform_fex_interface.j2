@@ -1,0 +1,40 @@
+{%  if platform_fexs is defined %}
+{%      for platform_fex in platform_fexs %}
+fex {{ platform_fex }}
+  hardware {{ platform_fexs[platform_fex].hardware }} qos-policy-offload
+  pinning max-links {{ platform_fexs[platform_fex].max_links }}
+  description "{{ platform_fexs[platform_fex].rack }}_{{ platform_fexs[platform_fex].device_id }}"
+{%          if platform_fexs[platform_fex].fcoe is defined %}
+  fcoe
+{%          endif %}
+{%          if platform_fexs[platform_fex].ports is defined %}
+  port {{ platform_fexs[platform_fex].ports }} type {{ platform_fexs[platform_fex].type }}
+{%          endif %}
+{%          if platform_fexs[platform_fex].locator is defined %}
+  locator-led fex {{ platform_fex }}
+{%          endif %}
+interface port-channel{{ platform_fex }}
+  description {{ platform_fexs[platform_fex].rack }}_{{ platform_fexs[platform_fex].hardware }}_{{ platform_fexs[platform_fex].device_id }}
+  switchport mode fex-fabric
+  no lacp suspend-individual
+  fex associate {{ platform_fex }}
+{%          if platform_fexs[platform_fex].service_policy is defined %}
+  service-policy type queuing input {{ platform_fexs[platform_fex].service_policy.input }}
+  service-policy type queuing output {{ platform_fexs[platform_fex].service_policy.output }}
+{%          endif %}
+{%          if type is defined %}
+{%              if type == "vpc" %}
+  vpc {{ platform_fex }}
+{%              endif %}
+{%          endif %}
+{%          if platform_fexs[platform_fex].members is defined %}
+{%              for member in platform_fexs[platform_fex].members %}
+interface {{ member }}
+  description {{ platform_fexs[platform_fex].rack }}_{{ platform_fexs[platform_fex].device_id}}_{{ platform_fexs[platform_fex].members[member][inventory_hostname].remote_port }} 
+  switchport mode fex-fabric
+  fex associate {{ platform_fex }}
+  channel-group {{ platform_fex }}
+{%              endfor %}
+{%          endif %}
+{%      endfor %}
+{%  endif %}

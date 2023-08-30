@@ -1,0 +1,18 @@
+---
+
+- hosts: CAMPUS
+  serial: 1
+
+  vars_prompt:
+   - name: output_file
+     prompt: please enter output filename
+     private: no
+   - name: Service_Account_creds
+     prompt: please enter Service Account credentials
+     private: yes
+
+
+  tasks:
+   - include: tasks/filepromptquiet.yml
+   - include: tasks/copyruntftp.yml
+   - include: tasks/nofilepromptquiet.yml

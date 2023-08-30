@@ -1,0 +1,192 @@
+cli alias name wr copy running-config startup-config
+ssh key rsa 2048 
+ip domain-lookup
+{%  if platform_defaults is defined %}
+{%      if platform_defaults.boot is defined %}
+boot kickstart bootflash:/{{ platform_defaults.boot.kickstart }}
+boot system bootflash:/{{ platform_defaults.boot.system }}
+{%      endif %}
+{%      if platform_defaults.hostname is defined %}
+hostname {{ platform_defaults.hostname }}
+{%      else %}
+{%          if host_defaults.hostname is defined %}
+hostname {{ host_defaults.hostname }}
+{%          endif %}
+{%      endif %}
+{%      if platform_defaults.enabled_features is defined %}
+{%          for enabled_feature in platform_defaults.enabled_features %}
+feature {{ enabled_feature }}
+{%          endfor %}
+{%      endif %}
+{%      if platform_defaults.disabled_features is defined %}
+{%          for disabled_feature in platform_defaults.disabled_features %}
+no feature {{ disabled_feature }}
+{%          endfor %}
+{%      endif %}
+{%      if platform_defaults.type is defined %}
+{%          if platform_defaults.type == 7000 %}
+cfs eth distribute
+system default switchport
+rmon event 1 log trap public description FATAL(1) owner PMON@FATAL
+rmon event 2 log trap public description CRITICAL(2) owner PMON@CRITICAL
+rmon event 3 log trap public description ERROR(3) owner PMON@ERROR
+rmon event 4 log trap public description WARNING(4) owner PMON@WARNING
+rmon event 5 log trap public description INFORMATION(5) owner PMON@INFO
+ip dhcp snooping
+service dhcp
+ip dhcp relay
+ipv6 dhcp relay
+{%          else %}
+{%              if platform_defaults.type == 5000 %}
+cli alias name more show file
+cfs ipv4 distribute
+vtp mode transparent
+logging event link-status default
+system private-vlan fex trunk
+device-alias mode enhanced
+mac address-table notification mac-move
+poap transit
+{%                  if platform_defaults.vsan_databases is defined %}
+vsan database
+{%                      for vsan_database in platform_defaults.vsan_databases %}
+{%                          if platform_defaults.vsan_databases[vsan_database].suspend is defined %}
+{%                              if platform_defaults.vsan_databases[vsan_database].suspend == true %}
+  vsan {{ vsan_database }} suspend
+{%                              endif %}
+{%                          else %}
+  vsan {{ vsan_database }}
+{%                          endif %}
+{%                      endfor %}
+{%                  endif %}
+{%              endif %}
+{%          endif %}
+{%      if platform_defaults.hsrp_defaults is defined %}
+{%          if platform_defaults.hsrp_defaults.keychains is defined %}
+{%              for keychain in platform_defaults.hsrp_defaults.keychains %}
+key chain {{ keychain }}
+  key {{ platform_defaults.hsrp_defaults.keychains[keychain].number }}
+    key-string 7 {{ platform_defaults.hsrp_defaults.keychains[keychain].string }}
+{%              endfor %}
+{%          endif %}
+{%      endif %}
+{%      if host_vpc_domains is defined %}
+{%          for host_vpc_domain in host_vpc_domains %}
+vpc domain {{ host_vpc_domain }}
+  peer-switch
+  role priority {{ host_vpc_domains[host_vpc_domain].priority }}
+{%              if value.vrf is defined %}
+  peer-keepalive destination {{ value.destination }} source {{ value.source }} vrf {{ value.vrf }}
+{%              else %}
+  peer-keepalive destination {{ value.destination }} source {{ value.source }}
+{%              endif %}
+{%              if host_vpc_domains[host_vpc_domain].delay is defined %}
+  delay restore {{ host_vpc_domains[host_vpc_domain].delay }}
+{%              else %}
+  peer-gateway
+  ipv6 nd synchronize
+  ip arp synchronize
+{%              endif %}
+{%          endfor %}
+{%      endif %}
+{%      endif %}
+{%      if platform_defaults.logging_level is defined %}
+{%          for feature in platform_defaults.logging_level.features %}
+logging level {{ feature }} {{ platform_defaults.logging_level.features[feature] }}
+{%          endfor %}
+{%      endif %}
+{%      if global_dc_defaults.logfiles is defined %}
+{%          for logfile in global_dc_defaults.logfiles %}
+logging logfile {{ logfile }} {{ global_dc_defaults.logfiles[logfile].level }}
+{%          endfor %}
+{%      endif %}
+{%      if global_dc_defaults.log_servers is defined %}
+{%          for log_server in global_dc_defaults.log_servers %}
+logging server {{ log_server }} {{ global_dc_defaults.log_servers[log_server].level }} use-vrf management
+{%          endfor %}
+{%      endif %}
+{%      if platform_defaults.logging is defined %}
+{%          for logging in platform_defaults.logging %}
+logging {{ logging }} {{ platform_defaults.logging[logging].level }}
+{%          endfor %}
+{%      endif %}
+{%      if global_dc_defaults.radius_servers is defined %}
+crypto key param rsa label {{ inventory_hostname }} modulus 2048
+{%          for radius_server in global_dc_defaults.radius_servers %}
+radius-server host {{ radius_server }} key 7 "{{ global_dc_defaults.radius_servers[radius_server].key }}" auth-port 1645 acct-port 1645 authentication accounting 
+{%          endfor %}
+{%      endif %}
+{%      if global_dc_defaults.aaa_servers is defined %}
+{%          for aaa_server in global_dc_defaults.aaa_servers %}
+aaa group server radius {{ aaa_server }}
+    server {{ global_dc_defaults.aaa_servers[aaa_server].server }}
+    use-vrf management
+    source-interface mgmt0
+{%         endfor %}
+{%      endif %}
+{%      if platform_defaults.snmp_servers is defined %}
+{%          for snmp_server in platform_defaults.snmp_servers %}
+{%              for port in platform_defaults.snmp_servers[snmp_server].ports %}
+snmp-server host {{ snmp_server }} traps version 2c {{ platform_defaults.snmp_servers[snmp_server].read }} udp-port {{ port }}
+{%              endfor %}
+{%          endfor %}
+{%      endif %}
+{%      if platform_defaults.snmpv3_servers is defined %}
+{%          for snmpv3_server in platform_defaults.snmpv3_servers %}
+snmp-server host {{ snmpv3_server }} traps version 3 auth {{ platform_defaults.snmpv3_servers[snmpv3_server].auth }}
+{%          endfor %}
+{%      endif %}
+{%      if platform_defaults.snmp_communities is defined %}
+{%          for snmp_community in platform_defaults.snmp_communities %}
+snmp-server community {{ snmp_community }} group {{ platform_defaults.snmp_communities[snmp_community].group }}
+{%          endfor %}
+{%      endif %}
+{%      if platform_defaults.rolls is defined %}
+{%         for roll in platform_defaults.rolls %}
+role name {{ roll }} 
+{%             for rule in platform_defaults.rolls[roll].rules %}
+  rule {{ rule }} permit {{ platform_defaults.rolls[roll].rules[rule].permission }}
+{%             endfor %}
+{%         endfor %}
+{%      endif %}
+{%      if platform_spanning_tree_values is defined %}
+{%          for platform_spanning_tree_value in platform_spanning_tree_values %}
+spanning-tree vlan {{ platform_spanning_tree_values[platform_spanning_tree_value].vlan }} priority {{ platform_spanning_tree_value }}
+{%          endfor %}
+{%      endif %}
+{%      if platform_defaults.errdisable is defined %}
+errdisable recovery interval {{ platform_defaults.errdisable.interval }}
+{%          for cause in platform_defaults.errdisable.causes %}
+errdisable recovery cause {{ cause }}
+{%          endfor %}
+{%      endif %}
+{%      if platform_defaults.slots is defined %}
+{%          for slot in platform_defaults.slots %}
+slot {{ slot }}
+{%              if platform_defaults.slots[slot].port is defined %}
+  port {{ platform_defaults.slots[slot].port }} type {{ platform_defaults.slots[slot].type }}
+{%              else %}
+{%                  if platform_defaults.slots[slot].provision is defined %}
+  provision model {{ platform_defaults.slots[slot].provision }}
+{%                  endif %}
+{%              endif %}
+{%          endfor %}
+{%      endif %}
+{%      if host_defaults.slots is defined %}
+{%          for slot in host_defaults.slots %}
+slot {{ slot }}
+{%              if host_defaults.slots[slot].port is defined %}
+  port {{ host_defaults.slots[slot].port }} type {{ host_defaults.slots[slot].type }}
+{%              else %}  
+{%                  if host_defaults.slots[slot].provision is defined %}
+  provision model {{ host_defaults.slots[slot].provision }}
+{%                  endif %}
+{%              endif %}
+{%          endfor %}
+{%      endif %}
+{%      if platform_defaults.ntp_servers is defined %}
+{%          for ntp_server in platform_defaults.ntp_servers %}
+ntp server {{ ntp_server }} prefer use-vrf management
+ntp source-interface  {{ platform_defaults.ntp_servers[ntp_server].source }}
+{%          endfor %}
+{%      endif %}
+{%  endif %}

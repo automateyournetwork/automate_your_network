@@ -1,0 +1,6 @@
+---
+
+- name: configure top level configuration
+  ios_config:
+    lines: file prompt quiet
+    provider: "{{ ioscli }}"

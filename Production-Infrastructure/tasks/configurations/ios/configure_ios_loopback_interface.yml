@@ -1,0 +1,7 @@
+---
+
+  - name: Create IOS Loopback Interface configuration 
+    ios_config: 
+      src: ../../templates/configurations/ios/27_ios_loopback_interfaces.j2
+      provider: "{{ ioscli }}" 
+    register: global_config_results 

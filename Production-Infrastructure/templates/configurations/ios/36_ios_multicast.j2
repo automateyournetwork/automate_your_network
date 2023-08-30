@@ -1,0 +1,20 @@
+{%  if host_multicast is defined %}
+{%      if host_multicast.pim_dm_fallback is defined %}
+{%          if host_multicast.pim_dm_fallback == false %}
+no ip pim dm-fallback
+{%          endif %}
+{%      endif %}
+{%      if host_multicast.pim is defined %}
+{%          if host_multicast.pim == true %}
+ip pim snooping
+{%          endif %}
+{%      endif %}
+{%      if host_multicast.vrfs is defined %}
+{%          for vrf in host_multicast.vrfs %}
+ip pim vrf {{ vrf }} rp-address {{ host_multicast.vrfs[vrf].rp_address }}
+{%              if host_multicast.vrfs[vrf].multicast_routing is defined %}
+ip multicast-routing vrf {{ vrf }}
+{%              endif %}
+{%          endfor %}
+{%      endif %}
+{%  endif %}

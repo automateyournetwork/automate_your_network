@@ -1,0 +1,31 @@
+{% for vlan in global_dc_vlans %}
+vlan {{ vlan }}
+{%     if global_dc_vlans[vlan].name is defined %}
+  name {{ global_dc_vlans[vlan].name }}
+{%     endif %}
+{%     if global_dc_vlans[vlan].private_vlan_type is defined %}
+  private-vlan {{ global_dc_vlans[vlan].private_vlan_type }} 
+{%     endif %}
+{%     if global_dc_vlans[vlan].private_vlan_association is defined %}
+  private-vlan association {{ global_dc_vlans[vlan].private_vlan_association }} 
+{%     endif %}
+{%     if global_dc_vlans[vlan].fcoe_vsan is defined %}
+  fcoe vsan {{ global_dc_vlans[vlan].fcoe_vsan }}
+{%     endif %}
+{% endfor %} 
+
+{% for vlan in platform_vlans %}
+vlan {{ vlan }}
+ {%     if platform_vlans[vlan].name is defined %}
+ name {{ platform_vlans[vlan].name }}
+{%     endif %}
+{%     if platform_vlans[vlan].private_vlan_type is defined %}
+  private-vlan {{ platform_vlans[vlan].private_vlan_type }} 
+{%     endif %}
+{%     if platform_vlans[vlan].private_vlan_association is defined %}
+  private-vlan association {{ platform_vlans[vlan].private_vlan_association }} 
+{%     endif %}
+{%     if platform_vlans[vlan].fcoe_vsan is defined %}
+  fcoe vsan {{ platform_vlans[vlan].fcoe_vsan }}
+{%     endif %}
+{% endfor %} 

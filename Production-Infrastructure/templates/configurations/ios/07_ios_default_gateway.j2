@@ -1,0 +1,3 @@
+{%  if platform_defaults.type == 3750 or platform_defaults.type == 3850 %}
+ip default-gateway 172.18.{{ host_defaults.site }}.254
+{%  endif %}

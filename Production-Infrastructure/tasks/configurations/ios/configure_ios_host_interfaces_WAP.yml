@@ -1,0 +1,7 @@
+---
+
+  - name: Create IOS Host Interface - WAP - configuration 
+    ios_config: 
+      src: ../../templates/configurations/ios/33_ios_host_interfaces_WAP.j2
+      provider: "{{ ioscli }}" 
+    register: global_config_results 

@@ -1,0 +1,10 @@
+
+- name: gather IOS facts
+  ios_facts:
+    gather_subset: interfaces
+    provider: "{{ ioscli }}"
+  register: ios_facts_results
+
+- debug:
+    msg: "{{ios_facts_results}}"
+    verbosity: 2

@@ -1,0 +1,56 @@
+---
+
+- hosts: CAMPUS
+  tasks:
+    - import_tasks: ../../tasks/configurations/ios/configure_ios_global.yml
+    - import_tasks: ../../tasks/configurations/ios/configure_ios_management_source.yml
+    - import_tasks: ../../tasks/configurations/ios/configure_ios_archive.yml
+    - import_tasks: ../../tasks/configurations/ios/configure_ios_default_gateway.yml
+    - import_tasks: ../../tasks/configurations/ios/configure_ios_snmp.yml
+    - import_tasks: ../../tasks/configurations/ios/configure_ios_acls.yml
+    - import_tasks: ../../tasks/configurations/ios/configure_ios_mqc_qos.yml
+    - import_tasks: ../../tasks/configurations/ios/configure_ios_aaa_rsa.yml
+
+- hosts: CAMPUS-CORE-DIST
+  tasks: 
+    - import_tasks: ../../tasks/configurations/ios/configure_ios_vsl.yml
+    - import_tasks: ../../tasks/configurations/ios/configure_ios_vrf.yml
+    - import_tasks: ../../tasks/configurations/ios/configure_ios_vrf_list.yml
+    - import_tasks: ../../tasks/configurations/ios/configure_ios_ospf.yml
+    - import_tasks: ../../tasks/configurations/ios/configure_ios_multicast.yml
+
+- hosts: CAMPUS
+  tasks:
+    - import_tasks: ../../tasks/configurations/ios/configure_ios_vlan.yml
+    - import_tasks: ../../tasks/configurations/ios/configure_ios_vlan_interface.yml
+    - import_tasks: ../../tasks/configurations/ios/configure_ios_platform_port_channel_interface.yml
+    - import_tasks: ../../tasks/configurations/ios/configure_ios_host_port_channel_interface.yml
+    - import_tasks: ../../tasks/configurations/ios/configure_ios_host_interfaces_unused.yml
+    - import_tasks: ../../tasks/configurations/ios/configure_ios_host_interfaces_DAD.yml
+    - import_tasks: ../../tasks/configurations/ios/configure_ios_host_interfaces_OPZone.yml
+    - import_tasks: ../../tasks/configurations/ios/configure_ios_host_interfaces_SECURITY.yml
+    - import_tasks: ../../tasks/configurations/ios/configure_ios_host_interfaces_WAP.yml
+    - import_tasks: ../../tasks/configurations/ios/configure_ios_host_interfaces_Custom.yml
+
+- hosts: CAMPUS-DIST
+  tasks:
+    - import_tasks: ../../tasks/configurations/ios/configure_ios_dhcp.yml
+
+- hosts: CAMPUS-ACCESS
+  tasks:
+    - import_tasks: ../../tasks/configurations/ios/configure_ios_powerstack.yml
+    - import_tasks: ../../tasks/configurations/ios/configure_ios_mls_qos.yml
+    - import_tasks: ../../tasks/configurations/ios/configure_ios_dot1x.yml
+    - import_tasks: ../../tasks/configurations/ios/configure_ios_dot1x_radius.yml
+
+- hosts: CAMPUS-CORE
+  tasks:
+    - import_tasks: ../../tasks/configurations/ios/configure_ios_6k_qos.yml 
+    - import_tasks: ../../tasks/configurations/ios/configure_ios_prefix_list.yml 
+    - import_tasks: ../../tasks/configurations/ios/configure_ios_route_maps.yml 
+    - import_tasks: ../../tasks/configurations/ios/configure_ios_static_routes.yml 
+    - import_tasks: ../../tasks/configurations/ios/configure_ios_loopback_interface.yml 
+
+- hosts: CAMPUS
+  tasks:
+    - import_tasks: ../../tasks/configurations/ios/ios_copyrunstart.yml  

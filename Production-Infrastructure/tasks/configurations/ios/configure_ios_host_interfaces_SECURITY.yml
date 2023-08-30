@@ -1,0 +1,7 @@
+---
+
+  - name: Create IOS Host Interface - SECURTIY - configuration 
+    ios_config: 
+      src: ../../templates/configurations/ios/31_ios_host_interfaces_SECURITY.j2
+      provider: "{{ ioscli }}" 
+    register: global_config_results 

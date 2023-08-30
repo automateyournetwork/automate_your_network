@@ -1,0 +1,118 @@
+{%  if host_interfaces is defined %}
+{%      for host_interface in host_interfaces %}
+{%          if host_interfaces[host_interface].type is not defined %}
+interface {{ host_interface }}
+{%              if host_interfaces[host_interface].switchport is defined %}
+{%                  if host_interfaces[host_interface].switchport == true %}
+ switchport nonegotiate
+{%                      if platform_defaults.type == 6000 %}
+ switchport 
+{%                      endif %}
+{%                      if host_interfaces[host_interface].switchport_mode == "access" %}
+ switchport mode access
+ switchport access vlan {{ host_interfaces[host_interface].vlans }}
+{%                         if platform_defaults.type == 6000 %}
+ spanning-tree portfast edge
+{%                          else %}
+ spanning-tree portfast
+{%                          endif %}
+ spanning-tree bpduguard enable
+{%                      else %}
+ switchport mode trunk 
+ switchport trunk native vlan {{ global_campus_defaults.native_vlan }}
+ switchport trunk allowed vlan {{ host_interfaces[host_interface].vlans }}
+{%                      endif %}
+{%                  else %}
+ no switchport 
+{%                  endif %}
+{%              endif %}
+{%              if host_defaults.poe is defined %}
+{%              else %}
+{%                  if power_inline is defined %}
+{%                      if power_inline == false %}
+ power inline never
+{%                      endif %}
+{%                  endif %}
+{%              endif %}
+{%              if host_interfaces[host_interface].vrf is defined %}
+ vrf forwarding {{ host_interfaces[host_interface].vrf }}
+{%              endif %}
+{%              if host_interfaces[host_interface].ip_address is defined %}
+{%                  if host_interfaces[host_interface].ip_address == false %}
+ no ip address 
+{%                  else %}
+ ip address {{ host_interfaces[host_interface].ip_address }}
+{%                  endif %}
+{%              endif %}
+{%              if host_interfaces[host_interface].trust_dscp is defined %}
+ mls qos trust dscp 
+{%              endif %}
+{%              if host_interfaces[host_interface].cdp_enable is defined %}
+{%                  if host_interfaces[host_interface].cdp_enable == false %}
+ no cdp enable 
+{%                  endif %}
+{%              endif %}
+{%              if host_interfaces[host_interface].portfast_edge is defined %}
+ spanning-tree portfast edge
+{%              endif %}
+{%              if host_interfaces[host_interface].bpdu_guard is defined %}
+ spanning-tree bpduguard enable
+{%              endif %}
+{%              if host_interfaces[host_interface].guard_root is defined %}
+ spanning-tree guard root
+{%              endif %}
+{%              if host_interfaces[host_interface].description is defined %}
+ description {{ host_interfaces[host_interface].description }}
+{%              endif %}
+{%              if host_interfaces[host_interface].mac_sticky is defined %}
+ switchport port-security violation  restrict
+ switchport port-security mac-address sticky
+ switchport port-security aging time 720
+ switchport port-security aging type inactivity
+ switchport port-security
+{%              endif %}
+{%              if platform_defaults.type == 3750 or platform_defaults.type == 2960 %}
+{%                  if platform_defaults.role is not defined %}
+{%                      if host_interfaces[host_interface].srr_queue_share is defined %}
+ srr-queue bandwidth share {{ platform_qos.platform_interface_values.srr_queue_share }}
+{%                          if platform_defaults.type == 2960 %}
+ srr-queue bandwidth shape {{ platform_qos.platform_interface_values.srr_queue_shape }}
+{%                          else %}
+ srr-queue bandwidth shape  {{ platform_qos.platform_interface_values.srr_queue_shape }}
+{%                          endif %}
+ priority-queue out
+{%                      endif %}
+{%                  endif %}
+{%              endif %}
+{%              if host_interfaces[host_interface].service_policy is defined %}
+{%                  if platform_defaults.type == 3850 %}
+ service-policy input PM-QoS-IN
+ service-policy output PM-QoS-OUT-Access
+{%                  endif %}
+{%                  if platform_defaults.type == 3750 %}
+ service-policy input PM-QoS-IN
+{%                  endif %}
+{%                  if host_interfaces[host_interface].service_policy.input is defined %}
+ service-policy input {{ host_interfaces[host_interface].service_policy.input }}
+{%                  endif %}
+{%                  if host_interfaces[host_interface].service_policy.output is defined %}
+ service-policy output {{ host_interfaces[host_interface].service_policy.output }}
+{%                  endif %}
+{%              endif %}
+{%              if platform_defaults.type == 3750 or platform_defaults.type == 3850 %}
+{%                  if host_interfaces[host_interface].storm_control_broadcast is defined %}
+{%                      if host_interfaces[host_interface].storm_control_broadcast == false %}
+{%                      else %}
+ storm-control broadcast level 30.00
+{%                      endif %}
+{%                  endif %}
+{%                  if host_interfaces[host_interface].storm_control_multicast is defined %}
+{%                      if host_interfaces[host_interface].storm_control_multicast == false %}
+{%                      else %}
+ storm-control multicast level 30.00
+{%                      endif %}
+{%                  endif %}
+{%              endif %}
+{%          endif %}
+{%      endfor %}
+{%  endif %}

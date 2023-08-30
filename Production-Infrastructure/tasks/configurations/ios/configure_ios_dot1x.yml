@@ -1,0 +1,7 @@
+---
+
+- name: Create IOS 802.1x configuration 
+  ios_config: 
+    src: ../../templates/configurations/ios/17_ios_dot1x.j2
+    provider: "{{ ioscli }}" 
+  register: global_config_results 

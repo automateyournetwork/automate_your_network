@@ -1,0 +1,77 @@
+{%  if platform_defaults.type == 6000 or platform_defaults.type == 4000 %}
+{%      for host_vrf in host_vrfs %}
+{%          if host_vrf == "global" %}
+router ospf {{ host_vrfs[host_vrf].tag }}
+{%          else %}
+router ospf {{ host_vrfs[host_vrf].tag }} vrf {{ host_vrf }}
+{%          endif %}
+{%          if host_defaults.hostname == "CORE" %}
+ router-id 1.1.1.{{ host_vrfs[host_vrf].tag }}
+{%          else %}
+ router-id {{ host_defaults.site_id }}.{{ host_defaults.site_id }}.{{ host_defaults.site_id }}.{{ host_vrfs[host_vrf].tag }}
+{%          endif %}
+ ispf
+ auto-cost reference-bandwidth 10000
+ nsf ietf 
+{%          if host_vrfs[host_vrf].summary_addresses is defined %}
+{%              for summary_address in host_vrfs[host_vrf].summary_addresses %}
+ summary-address {{ summary_address }}
+{%              endfor %}
+{%          endif %}
+{%          if platform_defaults.type == 4000 %}
+{%              if host_vrfs[host_vrf].tag != 1 %}
+ capability vrf-lite
+{%              endif %}
+{%          endif %}
+{%          if host_vrfs[host_vrf].area_0 is defined %}
+ area 0 authentication message-digest
+{%          endif %}
+{%          if host_vrfs[host_vrf].message_digest is defined %}
+ area {{ host_vrfs[host_vrf].tag }} authentication message-digest
+{%          endif %}
+{%          if host_vrfs[host_vrf].stub is defined %}
+{%              if host_defaults.hostname == "CORE" %}
+ area {{ host_vrfs[host_vrf].tag }} stub {{ host_vrfs[host_vrf].stub }}
+{%              else %}
+ area {{ host_vrfs[host_vrf].tag }} stub 
+{%              endif %}
+{%          endif %}
+{%          if host_vrfs[host_vrf].summary is defined %}
+ area {{ host_vrfs[host_vrf].tag }} range {{ host_vrfs[host_vrf].summary }} cost {{ host_vrfs[host_vrf].summary_cost }}
+{%          endif %}
+{%          if platform_defaults.type == 4000 %}
+ passive-interface default
+{%              if host_vrfs[host_vrf].tag != 1 %}
+ no passive-interface Port-channel1.{{ host_vrfs[host_vrf].tag }}
+{%              else %}
+ no passive-interface Port-channel1
+{%              endif %}
+{%          endif %}
+{%          if host_vrfs[host_vrf].redistribute is defined %}
+ redistribute {{ host_vrfs[host_vrf].redistribute }}
+{%          endif %}
+{%          if host_vrfs[host_vrf].passive_interfaces is defined %}
+{%              for passive_interface in host_vrfs[host_vrf].passive_interfaces %}
+ passive-interface {{ passive_interface }}
+{%              endfor %}
+{%          endif %}
+{%          if host_vrfs[host_vrf].summary_addresses is defined %}
+{%              for summary_address in host_vrfs[host_vrf].summary_addresses %}
+ summary-address {{ summary_address }}
+{%              endfor %}
+{%          endif %}
+{%          if platform_defaults.type == 4000 %}
+ network 172.20.{{ host_defaults.site_id }}.0 0.0.0.3 area {{ host_vrfs[host_vrf].tag }}
+{%          endif %}
+{%          if host_vrfs[host_vrf].networks is defined %}
+{%              for network in host_vrfs[host_vrf].networks %}
+{%                  for value in host_vrfs[host_vrf].networks[network].value %}
+ network {{ value }} area {{ network }}
+{%                  endfor %}
+{%              endfor %}
+{%          endif %}
+{%          if host_vrfs[host_vrf].default_originate is defined %}
+ default-information originate always
+{%          endif %}
+{%      endfor %}
+{%  endif %}

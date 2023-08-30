@@ -1,0 +1,8 @@
+---
+
+- name: Create NXOS Vlan
+  nxos_config: 
+    src: ../../templates/configurations/nxos/09_nxos_vlan.j2 
+    provider: "{{ nxoscli }}" 
+  tags: vlan 
+  register: vlan_config_results 

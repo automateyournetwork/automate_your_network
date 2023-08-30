@@ -1,0 +1,5 @@
+---
+- name: Copy Run to Start
+  ios_command:
+    commands: wr
+    provider: "{{ ioscli }}"

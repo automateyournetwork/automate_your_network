@@ -1,0 +1,7 @@
+---
+
+  - name: Create IOS MLS QOS
+    ios_config: 
+      src: ../../templates/configurations/ios/11_ios_mls_qos.j2
+      provider: "{{ ioscli }}" 
+    register: global_config_results 

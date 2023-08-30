@@ -1,0 +1,21 @@
+{%  if platform_access_lists is defined %}
+{%      for platform_access_list in platform_access_lists %}
+ip access-list {{ platform_access_list }}
+{%          if platform_access_lists[platform_access_list].statistics is defined %}
+{%              if platform_access_lists[platform_access_list].statistics == true %}
+  statistics per-entry
+{%              endif %}
+{%          endif %}
+{%          for rule in platform_access_lists[platform_access_list].rules %}
+{%              if platform_access_lists[platform_access_list].rules[rule].log is defined and platform_access_lists[platform_access_list].rules[rule].range_start is defined %}
+  {{ rule }} {{ platform_access_lists[platform_access_list].rules[rule].permission }} {{ platform_access_lists[platform_access_list].rules[rule].type }} {{ platform_access_lists[platform_access_list].rules[rule].source }} {{ platform_access_lists[platform_access_list].rules[rule].destination }} range {{ platform_access_lists[platform_access_list].rules[rule].range_start }} {{ platform_access_lists[platform_access_list].rules[rule].range_end }} log
+{%              else %}
+{%                  if platform_access_lists[platform_access_list].rules[rule].log is defined %}
+  {{ rule }} {{ platform_access_lists[platform_access_list].rules[rule].permission }} {{ platform_access_lists[platform_access_list].rules[rule].type }} {{ platform_access_lists[platform_access_list].rules[rule].source }} {{ platform_access_lists[platform_access_list].rules[rule].destination }} log
+{%                  else %}
+  {{ rule }} {{ platform_access_lists[platform_access_list].rules[rule].permission }} {{ platform_access_lists[platform_access_list].rules[rule].type }} {{ platform_access_lists[platform_access_list].rules[rule].source }} {{ platform_access_lists[platform_access_list].rules[rule].destination }}
+{%                  endif %}
+{%              endif %}
+{%          endfor %}
+{%      endfor %}
+{% endif %}

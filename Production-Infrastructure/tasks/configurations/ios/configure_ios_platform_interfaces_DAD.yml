@@ -1,0 +1,7 @@
+---
+
+  - name: Create IOS Platform Interface - Dual Active Detection - configuration 
+    ios_config: 
+      src: ../../templates/configurations/ios/28_ios_platform_interfaces_DAD.j2
+      provider: "{{ ioscli }}" 
+    register: global_config_results 

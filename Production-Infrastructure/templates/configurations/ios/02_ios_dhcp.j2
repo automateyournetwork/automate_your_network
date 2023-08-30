@@ -1,0 +1,18 @@
+{%  if host_dhcp_servers is defined %}
+{%      for pool in host_dhcp_servers.pools %}
+{%          for excluded_address in host_dhcp_servers.pools[pool].excluded_addresses %}
+ip dhcp excluded-address {{ excluded_address }}
+{%          endfor %}
+ip dhcp pool {{ pool }}   
+ network {{ host_dhcp_servers.pools[pool].network }}
+ bootfile {{ host_dhcp_servers.pools[pool].bootfile }}
+ domain-name {{ host_dhcp_servers.pools[pool].domain_name }}
+{%              if host_dhcp_servers.pools[pool].options is defined %}
+{%                  for option in host_dhcp_servers.pools[pool].options %}
+ option {{ option }} ip {{ host_dhcp_servers.pools[pool].options[option].ip }}
+{%                  endfor %}
+{%             endif %}
+ default-router {{ host_dhcp_servers.pools[pool].default_router }}
+ dns-server {{ host_dhcp_servers.pools[pool].dns_server }}
+{%      endfor %}
+{%  endif %}

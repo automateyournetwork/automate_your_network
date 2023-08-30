@@ -1,0 +1,7 @@
+---
+
+- name: Create IOS Global configuration 
+  ios_config: 
+    src: ../../templates/configurations/ios/01_ios_global.j2
+    provider: "{{ ioscli }}" 
+  register: global_config_results 

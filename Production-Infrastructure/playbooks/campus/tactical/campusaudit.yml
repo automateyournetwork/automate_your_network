@@ -1,0 +1,46 @@
+---
+
+- hosts: CAMPUS
+  serial: 1
+
+  vars_prompt:
+   - name: output_file
+     prompt: please enter output filename
+     private: no
+   - name: Service_Account_creds
+     prompt: please enter Service Account credentials
+     private: yes
+
+
+  tasks:
+   - include: tasks/ospfneighbor.yml
+   - include: tasks/vrfdetail.yml
+   - include: tasks/iproutevrf-after.yml
+
+   - name: create log file for all devices
+     file: path=/etc/ansible/roles/campus-network-audit/results/{{ output_file }}.all.txt state=touch
+
+   - name: log to file for all devices
+     lineinfile:
+       insertafter: EOF
+       path: /etc/ansible/roles/campus-network-audit/results/{{ output_file }}.all.txt
+       line: '{{ item }}'
+     with_items:
+       - "#####{{inventory_hostname}}#####"
+       - "{{ ospfneighbor }}"
+       - "{{ vrfdetail }}"
+       - "{{ iproutevrf_all }}"
+
+   - name: create log file for individual device
+     file: path=/etc/ansible/roles/campus-network-audit/results/{{ output_file }}.{{inventory_hostname}}.txt state=touch
+
+   - name: log to file for individual device
+     lineinfile:
+       insertafter: EOF
+       path: /etc/ansible/roles/campus-network-audit/results/{{ output_file }}.{{inventory_hostname}}.txt
+       line: '{{ item }}'
+     with_items:
+       - "#####{{inventory_hostname}}#####"
+       - "{{ ospfneighbor }}"
+       - "{{ vrfdetail }}"
+       - "{{ iproutevrf_all }}"

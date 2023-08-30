@@ -1,0 +1,115 @@
+no service pad
+service tcp-keepalives-in
+service tcp-keepalives-out
+service timestamps debug datetime msec localtime
+service timestamps log datetime msec localtime
+service password-encryption
+service compress-config
+service counters max age 5
+hostname {{ host_defaults.hostname }}
+{%  if platform_defaults.type == 6000 %}
+boot system bootdisk:{{ platform_defaults.boot }}
+{%  endif %}
+{%  if platform_defaults.type == 4000 %}
+boot system bootflash:{{ host_defaults.boot }}
+{%  endif %}
+logging buffered 64000
+{%  if host_defaults.logging_levels is defined %}
+{%      for logging_level in host_defaults.logging_levels %}
+{%          for logging_target in host_defaults.logging_levels[logging_level]  %}
+logging {{ logging_target }} {{ logging_level }}
+{%          endfor %}
+{%      endfor %}
+{%  endif %}
+{%  if platform_defaults.type == 6000 or platform_defaults.type == 4000 %}
+service compress-config
+no ip bootp server
+diagnostic bootup level complete
+{%  endif %}
+errdisable recovery interval 60
+{%  if platform_defaults.type == 6000 or platform_defaults.type == 4000 or platform_defaults.type == 3850 %}
+redundancy 
+ mode sso
+{%  endif %}
+enable secret 5 {{ global_campus_defaults.enable_secret }}
+username admin privilege 15 secret 5 {{ global_campus_defaults.enable_secret }}
+aaa new-model
+{%  if platform_defaults.type == 6000 %}
+platform ip cef load-sharing ip-only
+platform sub-interface maximum-vlan vlan-id 2048
+platform sub-interface maximum-vlan enable
+platform rate-limit layer2 port-security pkt 300 burst 10
+no logging event link-status boot
+logging event link-status default
+{%  endif %}
+{%  if platform_defaults.type == 3750 or platform_defaults.type == 3850  %}
+stack-mac persistent timer 0
+{%  endif %}
+clock timezone est -5 0
+clock summer-time EDT recurring
+ip arp proxy disable
+udld enable
+no ip domain-lookup
+ip domain-name {{ global_campus_defaults.domain }}
+vtp domain NULL
+vtp mode transparent
+{%  if platform_defaults.type == 4000 %}
+power redundancy-mode redundant
+{%  endif %}
+login on-failure log
+login on-success log
+spanning-tree mode rapid-pvst
+spanning-tree extend system-id
+{%  if host_spanning_tree_values is defined %}
+{%      for host_spanning_tree_value in host_spanning_tree_values %}
+{%          for vlan_list in host_spanning_tree_values[host_spanning_tree_value] %}
+spanning-tree vlan {{ vlan_list }} priority {{ host_spanning_tree_value }}
+{%          endfor %}
+{%      endfor %}
+{%  endif %}
+{%  if platform_defaults.type == 3750 %}
+port-channel load-balance src-dst-ip
+{%  else %}
+{%      if platform_defaults.type == 6000 %}
+port-channel load-balance src-dst-mixed-ip-port
+{%      else %}
+{%         if platform_defaults.type == 4000 or platform_defaults.type == 3850 %}
+port-channel load-balance src-dst-port
+{%         endif %}
+{%      endif %}
+{%  endif %}
+{%  if platform_defaults.type != 3850 %}
+vlan internal allocation policy ascending
+{%  endif %}
+ip ssh version 2
+{%  if platform_defaults.type == 3750 or platform_defaults.type == 2960 %}
+{%  else %}
+no ip forward-protocol nd
+{%  endif %}
+no ip http server
+no ip http secure-server
+logging trap debugging
+{%  for logging_host in global_campus_defaults.logging_hosts %}
+logging host {{ logging_host }}
+{%  endfor %}
+line con 0
+ session-timeout 5 
+ exec-timeout 20 0
+ transport output none
+ stopbits 1
+line vty 0 4
+ session-timeout 15 
+ access-class 10 in
+ exec-timeout 20 0
+ privilege level 15
+ transport input ssh
+ transport output none
+ stopbits 1
+line vty 5 15
+ session-timeout 15 
+ access-class 10 in
+ exec-timeout 20 0
+ privilege level 15
+ transport input ssh
+ transport output none
+ stopbits 1

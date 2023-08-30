@@ -1,0 +1,7 @@
+---
+
+  - name: Create IOS Prefix List
+    ios_config: 
+      src: ../../templates/configurations/ios/14_ios_prefix_list.j2
+      provider: "{{ ioscli }}" 
+    register: global_config_results 

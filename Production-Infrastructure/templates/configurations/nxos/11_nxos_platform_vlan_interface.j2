@@ -1,0 +1,46 @@
+{% if platform_hsrp_vlan_interfaces is defined %}
+{%     for platform_hsrp_vlan_interface in platform_hsrp_vlan_interfaces %}
+interface {{ platform_hsrp_vlan_interface }}
+{%         if platform_hsrp_vlan_interfaces[platform_hsrp_vlan_interface].vrf_member is defined %}
+  vrf member {{ platform_hsrp_vlan_interfaces[platform_hsrp_vlan_interface].vrf_member }}
+{%         endif %}
+  no ip redirects
+{%         if platform_hsrp_vlan_interfaces[platform_hsrp_vlan_interface][inventory_hostname] is defined %}
+{%             if platform_hsrp_vlan_interfaces[platform_hsrp_vlan_interface][inventory_hostname].ip_address is defined %}
+  ip address {{ platform_hsrp_vlan_interfaces[platform_hsrp_vlan_interface][inventory_hostname].ip_address }}
+{%             endif %}
+{%         endif %}
+{%         if platform_hsrp_vlan_interfaces[platform_hsrp_vlan_interface].area is defined %}
+  ip router ospf {{ platform_defaults.ospf_defaults.ospf }} area {{ platform_hsrp_vlan_interfaces[platform_hsrp_vlan_interface].area}}
+{%         endif %}
+{%         if platform_hsrp_vlan_interfaces[platform_hsrp_vlan_interface].hsrp is defined %}
+  hsrp version {{ platform_defaults.hsrp_defaults.version}}
+  hsrp {{ platform_hsrp_vlan_interfaces[platform_hsrp_vlan_interface].vlan }} 
+    authentication {{ platform_defaults.hsrp_defaults.authentication}}
+{%             if host_hsrp_defaults.preempt is defined %}
+    preempt {{ host_hsrp_defaults.preempt}} 
+{%             endif %}
+    priority {{ host_hsrp_defaults.priority}}
+    ip {{ platform_hsrp_vlan_interfaces[platform_hsrp_vlan_interface].hsrp.ip}}
+{%         endif %}
+{%         if platform_hsrp_vlan_interfaces[platform_hsrp_vlan_interface].ip_helper_profile is defined %}
+{%             for helper_address in platform_dhcp_servers[platform_hsrp_vlan_interfaces[platform_hsrp_vlan_interface].ip_helper_profile] %}
+  ip dhcp relay address {{ helper_address }} 
+{%             endfor%}
+{%         endif %}
+  description {{ platform_hsrp_vlan_interfaces[platform_hsrp_vlan_interface].description }}
+{%         if platform_hsrp_vlan_interfaces[platform_hsrp_vlan_interface].state_enabled is defined %}
+{%             if platform_hsrp_vlan_interfaces[platform_hsrp_vlan_interface].state_enabled == true %}
+  no shutdown
+{%             endif %}
+{%         endif %}
+{%         if platform_hsrp_vlan_interfaces[platform_hsrp_vlan_interface][inventory_hostname] is defined %}
+{%             if platform_hsrp_vlan_interfaces[platform_hsrp_vlan_interface][inventory_hostname].mac_address is defined %}
+  mac-address {{ platform_hsrp_vlan_interfaces[platform_hsrp_vlan_interface][inventory_hostname].mac_address }}
+{%             endif %}
+{%         endif %}
+{%         if platform_hsrp_vlan_interfaces[platform_hsrp_vlan_interface].bandwidth is defined %}
+  bandwidth {{ platform_hsrp_vlan_interfaces[platform_hsrp_vlan_interface].bandwidth }}
+{%         endif %}
+{%     endfor %} 
+{% endif %}

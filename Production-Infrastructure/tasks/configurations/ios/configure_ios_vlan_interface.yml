@@ -1,0 +1,7 @@
+---
+
+- name: Create IOS SVI configuration 
+  ios_config: 
+    src: ../../templates/configurations/ios/24_ios_vlan_interface.j2
+    provider: "{{ ioscli }}" 
+  register: global_config_results 

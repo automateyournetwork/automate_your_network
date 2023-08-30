@@ -1,0 +1,203 @@
+{%  if host_port_channels is defined %}
+{%      for host_port_channel in host_port_channels %}
+interface {{ host_port_channel }}
+ description {{ host_port_channels[host_port_channel].description }}
+{%          if host_port_channels[host_port_channel].switchport is defined %}
+{%              if host_port_channels[host_port_channel].switchport == false %}
+ no switchport
+{%              else %}
+ switchport
+{%              endif %}
+{%          endif %}
+{%          if host_port_channels[host_port_channel].switchport_mode is defined %}
+{%              if host_port_channels[host_port_channel].switchport_mode == "trunk" %}
+{%                  if host_port_channels[host_port_channel].encapsulation is defined %}
+ switchport trunk encapsulation {{ host_port_channels[host_port_channel].encapsulation }}
+{%                  endif %}
+ switchport trunk native vlan {{ global_campus_defaults.native_vlan }}
+{%                  if host_port_channels[host_port_channel].vlans is defined %}
+ switchport trunk allowed vlan {{ host_port_channels[host_port_channel].vlans }}
+{%                  endif %}
+{%                  if host_port_channels[host_port_channel].vlans_add is defined %}
+ switchport trunk allowed vlan add {{ host_port_channels[host_port_channel].vlans_add }}
+{%                  endif %}
+{%                  if host_port_channels[host_port_channel].vlans_add01 is defined %}
+ switchport trunk allowed vlan add {{ host_port_channels[host_port_channel].vlans_add01 }}
+{%                  endif %}
+{%                  if host_port_channels[host_port_channel].vlans_add02 is defined %}
+ switchport trunk allowed vlan add {{ host_port_channels[host_port_channel].vlans_add02 }}
+{%                  endif %}
+ switchport mode trunk 
+{%                  if host_port_channels[host_port_channel].switchport_nonegotiate is defined %}
+ switchport nonegotiate
+{%                  endif %}
+{%              endif %}
+{%          endif %}
+{%          if host_port_channels[host_port_channel].guard_root is defined %}
+{%              if host_port_channels[host_port_channel].guard_root == true %}
+ spanning-tree guard root
+{%              endif %}
+{%          endif %}
+{%          if host_port_channels[host_port_channel].service_policy is defined %}
+{%              if host_port_channels[host_port_channel].service_policy.input is defined %}
+ service-policy input {{ host_port_channels[host_port_channel].service_policy.input }}
+{%              endif %}
+{%              if host_port_channels[host_port_channel].service_policy.output is defined %}
+ service-policy output {{ host_port_channels[host_port_channel].service_policy.output }}
+{%              endif %}
+{%          endif %}
+{%          if host_port_channels[host_port_channel].vnet_list is defined %}
+ vnet trunk list {{ host_port_channels[host_port_channel].vnet_list }}
+{%          endif %}
+{%          if host_port_channels[host_port_channel].ip_address is defined %}
+{%              if host_port_channels[host_port_channel].ip_address == false %}
+ no ip address
+{%              else %}
+ ip address {{ host_port_channels[host_port_channel].ip_address }}
+{%              endif %}
+{%          endif %}
+{%          if host_port_channels[host_port_channel].message_digest_key is defined %}
+ ip ospf message-digest-key 1 md5 7 {{ host_port_channels[host_port_channel].message_digest_key }}
+{%          endif %}
+{%          if host_port_channels[host_port_channel].point_to_point is defined %}
+ ip ospf network point-to-point
+{%          endif %}
+{%          if host_port_channels[host_port_channel].port_fast is defined %}
+ spanning-tree portfast {{ host_port_channels[host_port_channel].port_fast }}
+{%          endif %}
+{%          if host_port_channels[host_port_channel].pim is defined %}
+ ip pim {{ host_port_channels[host_port_channel].pim }}
+{%          endif %}
+{%          if host_port_channels[host_port_channel].subinterfaces is defined %}
+{%              for subinterface in host_port_channels[host_port_channel].subinterfaces %}
+interface {{ subinterface }}
+ description {{ host_port_channels[host_port_channel].subinterfaces[subinterface].description }}
+ encapsulation dot1Q {{ host_port_channels[host_port_channel].subinterfaces[subinterface].subinterface }}
+ vrf forwarding {{ host_port_channels[host_port_channel].subinterfaces[subinterface].vrf }}
+ ip address {{ host_port_channels[host_port_channel].subinterfaces[subinterface].ip_address }}
+ ip ospf message-digest-key 1 md5 7 {{ host_port_channels[host_port_channel].subinterfaces[subinterface].message_digest_key }}
+{%                  if host_port_channels[host_port_channel].subinterfaces[subinterface].point_to_point is defined %} 
+ ip ospf network point-to-point
+{%                  endif %}
+{%              endfor %}
+{%          endif %}
+{%          if host_port_channels[host_port_channel].members is defined %}
+{%              for member in host_port_channels[host_port_channel].members %}
+interface {{ member }}
+{%                  if host_port_channels[host_port_channel].members[member].description is defined %}
+ description {{ host_port_channels[host_port_channel].members[member].description }}
+{%                  else %}
+ description {{ host_port_channels[host_port_channel].description }}
+{%                  endif %}
+{%                  if host_port_channels[host_port_channel].switchport is defined %}
+{%                      if host_port_channels[host_port_channel].switchport == false %}
+ no switchport
+{%                      else %}
+{%                          if platform_defaults.type == 6000 %}
+ switchport
+{%                          endif %}
+{%                      endif %}
+{%                  endif %}
+{%                  if host_port_channels[host_port_channel].members[member].vlan_mapping is defined %}
+ switchport vlan mapping enable
+ switchport vlan mapping {{ host_port_channels[host_port_channel].members[member].vlan_map }}
+{%                  endif %}
+{%                  if host_port_channels[host_port_channel].switchport_mode is defined %}
+{%                      if host_port_channels[host_port_channel].switchport_mode == "trunk" %}
+{%                          if host_port_channels[host_port_channel].encapsulation is defined %}
+ switchport trunk encapsulation {{ host_port_channels[host_port_channel].encapsulation }}
+{%                          endif %}
+ switchport trunk native vlan {{ global_campus_defaults.native_vlan }}
+ switchport trunk allowed vlan {{ host_port_channels[host_port_channel].vlans }}
+{%                          if host_port_channels[host_port_channel].vlans_add is defined %}
+ switchport trunk allowed vlan add {{ host_port_channels[host_port_channel].vlans_add }}
+{%                          endif %}
+ switchport mode trunk
+{%                          if host_port_channels[host_port_channel].switchport_nonegotiate is defined %}
+ switchport nonegotiate
+{%                          endif %}
+{%                      endif %}
+{%                  endif %}
+{%                  if host_defaults.poe is defined %}
+{%                  else %}
+{%                      if host_port_channels[host_port_channel].members[member].power_inline is defined %}
+{%                          if host_port_channels[host_port_channel].members[member].power_inline == false %}
+ power inline never
+{%                          endif %}
+{%                      endif %}
+{%                  endif %}
+{%                  if platform_qos is defined %}
+{%                      if host_port_channels[host_port_channel].members[member].srr_queue_share is defined %}
+ srr-queue bandwidth share {{ platform_qos.platform_interface_values.srr_queue_share }}
+{%                      endif %}
+{%                      if host_port_channels[host_port_channel].members[member].srr_queue_shape is defined %}
+{%                          if platform_defaults.type == 2960 %}
+ srr-queue bandwidth shape {{ platform_qos.platform_interface_values.srr_queue_shape }}
+{%                          else %}
+ srr-queue bandwidth shape  {{ platform_qos.platform_interface_values.srr_queue_shape }}
+{%                          endif %}
+{%                      endif %}
+{%                  endif %}
+{%                  if host_port_channels[host_port_channel].members[member].priority_queue is defined %}
+ priority-queue {{ host_port_channels[host_port_channel].members[member].priority_queue }}
+{%                  endif %}
+{%                  if host_port_channels[host_port_channel].members[member].trust_dscp is defined %}
+{%                      if host_port_channels[host_port_channel].members[member].trust_dscp == true %}
+ mls qos trust dscp
+{%                      endif %}
+{%                  endif %}
+{%                  if host_port_channels[host_port_channel].ip_address is defined %}
+{%                      if host_port_channels[host_port_channel].ip_address == false %}
+ no ip address
+{%                      endif %}
+{%                  endif %}
+{%                  if host_port_channels[host_port_channel].members[member].ip_address is defined %}
+{%                      if host_port_channels[host_port_channel].members[member].ip_address == false %}
+ no ip address
+{%                      endif %}
+{%                  endif %}
+{%                  if host_port_channels[host_port_channel].members[member].cts is defined %}
+ cts {{ host_port_channels[host_port_channel].members[member].cts.type }}
+{%                      if host_port_channels[host_port_channel].members[member].cts.propogate == false %}
+  no propogate sgt
+{%                      endif %}
+  sap pmk {{ host_port_channels[host_port_channel].members[member].cts.pmk }} mode-list {{ host_port_channels[host_port_channel].members[member].cts.mode_list }}
+{%                  endif %}
+{%                  if host_port_channels[host_port_channel].members[member].udld is defined %}
+{%                      if host_port_channels[host_port_channel].members[member].udld == false %}
+ udld port disable
+{%                      endif %}
+{%                  endif %}
+{%                  if host_port_channels[host_port_channel].members[member].cdp_enable is defined %}
+{%                      if host_port_channels[host_port_channel].members[member].cdp_enable == false %}
+ no cdp enable 
+{%                      endif %}
+{%                  endif %}
+{%                  if host_port_channels[host_port_channel].members[member].lacp_rate is defined %}
+ lacp rate {{ host_port_channels[host_port_channel].members[member].lacp_rate }}
+{%                  endif %}
+{%                  if host_port_channels[host_port_channel].members[member].channel_protocol is defined %}
+ channel-protocol {{ host_port_channels[host_port_channel].members[member].channel_protocol }}
+{%                  endif %}
+ channel-group {{ host_port_channels[host_port_channel].port_channel }} mode {{ host_port_channels[host_port_channel].members[member].lacp }}
+{%                  if host_port_channels[host_port_channel].guard_root is defined %}
+ spanning-tree guard root 
+{%                  endif %}
+{%                  if host_port_channels[host_port_channel].members[member].service_policy is defined %}
+{%                      if host_port_channels[host_port_channel].members[member].service_policy.type is defined %}
+{%                          if host_port_channels[host_port_channel].members[member].service_policy.output is defined %}
+ service-policy type {{ host_port_channels[host_port_channel].members[member].service_policy.type }} output {{ host_port_channels[host_port_channel].members[member].service_policy.output }}
+{%                          endif %}
+{%                      else %}
+{%                          if host_port_channels[host_port_channel].members[member].service_policy.input is defined %}
+ service-policy input {{ host_port_channels[host_port_channel].members[member].service_policy.input }}
+{%                          endif %}
+{%                          if host_port_channels[host_port_channel].members[member].service_policy.output is defined %}
+ service-policy output {{ host_port_channels[host_port_channel].members[member].service_policy.output }}
+{%                          endif %}
+{%                      endif %}
+{%                  endif %}
+{%              endfor %}
+{%          endif %}
+{%      endfor %}
+{%  endif %}

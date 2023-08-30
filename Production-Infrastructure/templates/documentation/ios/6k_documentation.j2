@@ -1,0 +1,25 @@
+## {{ inventory_hostname }}  
+
+**Loopback Interfaces**
+
+| Loopback  | Description    | Management IP  | Subnet Mask   | Multicast  |
+| --------- | -------------- | -------------- | ------------- | ---------- |
+{% for host_loopback_interface,value in host_loopback_interfaces|dictsort %} 
+| {{ host_loopback_interface }} | {{ value.description }} | {{ value.ip }} | {{ value.subnet_mask }} | {% if value.pim is defined %} {{value.pim}} | {% else %} - | {% endif %} 
+{% endfor %}  
+
+**VLANs** 
+
+| VLAN  | Name   | 
+| ----- | ------ | 
+| {{ global_campus_defaults.native_vlan }} | NativeVLAN |  
+{% for vlan,value in host_vlans|dictsort %}
+| {{ vlan }} | {{ value.name }} | 
+{% endfor %} 
+ 
+ ### Running Configuration 
+
+ ``` 
+ {{ c6k_config }} 
+
+ ``` 

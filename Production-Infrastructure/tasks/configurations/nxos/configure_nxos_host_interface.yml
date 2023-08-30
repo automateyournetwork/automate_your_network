@@ -1,0 +1,8 @@
+---
+
+- name: Create NXOS Host Interfaces Configuration
+  nxos_config: 
+    src: ../../templates/configurations/nxos/18_nxos_host_interface.j2
+    provider: "{{ nxoscli }}" 
+  tags: vlan 
+  register: interface_config_results 

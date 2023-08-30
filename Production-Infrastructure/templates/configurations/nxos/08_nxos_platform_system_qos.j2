@@ -1,0 +1,13 @@
+{%  if platform_system_qos_policies is defined %}
+system qos
+{%      for platform_system_qos_policy in platform_system_qos_policies %}
+{%          if platform_system_qos_policies[platform_system_qos_policy].input is defined %}
+  service-policy type {{ platform_system_qos_policy }} input {{ platform_system_qos_policies[platform_system_qos_policy].input.policy }}
+{%              if platform_system_qos_policies[platform_system_qos_policy].output is defined %}
+  service-policy type {{ platform_system_qos_policy }} output {{ platform_system_qos_policies[platform_system_qos_policy].output.policy }}
+{%              endif %}
+{%          else %}
+  service-policy type {{ platform_system_qos_policy }} {{ platform_system_qos_policies[platform_system_qos_policy].policy }}
+{%          endif %}
+{%      endfor %}
+{%  endif %}

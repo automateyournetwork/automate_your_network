@@ -1,0 +1,7 @@
+---
+
+- name: NXOS Copy Run Start
+  nxos_command:
+    commands: wr
+    provider: "{{ nxoscli }}"
+    timeout: 600

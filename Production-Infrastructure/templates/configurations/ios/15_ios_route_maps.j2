@@ -1,0 +1,13 @@
+{%  if host_route_maps is defined %}
+{%      for host_route_map in host_route_maps %}
+route-map {{ host_route_map }} {{ host_route_maps[host_route_map].permission }} 10 
+{%          if host_route_maps[host_route_map].match == "prefix_list" %}
+ match ip address prefix-list {{ host_route_map }}
+{%          else %}
+ match ip address {{ host_route_maps[host_route_map].match }}
+{%          endif %}
+{%          if host_route_maps[host_route_map].next_hop is defined %}
+ set ip default next-hop {{ host_route_maps[host_route_map].next_hop }}
+{%          endif %}
+{%      endfor %}
+{%  endif %}

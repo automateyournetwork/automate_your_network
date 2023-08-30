@@ -1,0 +1,6 @@
+{%  if platform_route_maps is defined %}
+{%      for platform_route_map in platform_route_maps %}
+route-map {{ platform_route_map }} {{ platform_route_maps[platform_route_map].permission }} 10 
+  match ip address prefix-list {{ platform_route_map }}
+{%      endfor %}
+{%  endif %}

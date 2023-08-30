@@ -1,0 +1,11 @@
+{%  if host_static_routes is defined %}
+{%      for host_static_route in host_static_routes %}
+{%          for route in host_static_routes[host_static_route].routes %}
+{%              if host_static_route == "global" %}
+ip route {{ route }}
+{%              else %}
+ip route vrf {{ host_static_route }} {{ route }}
+{%              endif %}
+{%          endfor %}
+{%      endfor %}
+{%  endif %}

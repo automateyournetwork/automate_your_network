@@ -1,0 +1,7 @@
+---
+
+  - name: Create IOS Host Interface - Custom Ports - configuration 
+    ios_config: 
+      src: ../../templates/configurations/ios/35_ios_host_interfaces_Custom.j2
+      provider: "{{ ioscli }}" 
+    register: global_config_results 

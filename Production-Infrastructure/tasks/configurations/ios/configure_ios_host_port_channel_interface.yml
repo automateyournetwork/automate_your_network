@@ -1,0 +1,7 @@
+---
+
+  - name: Create IOS Host Port-Channel Interface configuration 
+    ios_config: 
+      src: ../../templates/configurations/ios/26_ios_host_port_channel_interfaces.j2
+      provider: "{{ ioscli }}" 
+    register: global_config_results 

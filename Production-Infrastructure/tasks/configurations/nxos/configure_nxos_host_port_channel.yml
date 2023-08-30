@@ -1,0 +1,8 @@
+---
+
+- name: Create NXOS Host Port Channel Configuration
+  nxos_config: 
+    src: ../../templates/configurations/nxos/16_nxos_host_port_channel.j2
+    provider: "{{ nxoscli }}" 
+  tags: vlan 
+  register: interface_config_results 

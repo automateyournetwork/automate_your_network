@@ -1,0 +1,25 @@
+{%  if platform_defaults.type == 3750 or  platform_defaults.type == 3850 or platform_defaults.type == 2960 %}
+{%      if platform_defaults.role is not defined %}
+{%          for aaa_server in platform_defaults.aaa_servers %}
+aaa group server radius {{ aaa_server }}
+{%              if platform_defaults.type != 2960 %}
+ server name {{ platform_defaults.aaa_servers[aaa_server].server }}
+{%              else %}
+{%                  if platform_defaults.dot1x_radius_servers is defined %}
+{%                      for dot1x_radius_server in platform_defaults.dot1x_radius_servers %}
+ server {{ platform_defaults.dot1x_radius_servers[dot1x_radius_server].address }} auth-port {{ platform_defaults.dot1x_radius_servers[dot1x_radius_server].auth_port }} acct-port {{ platform_defaults.dot1x_radius_servers[dot1x_radius_server].acct_port }}
+{%                      endfor %}
+{%                  endif %}
+{%              endif %}
+{%              if platform_defaults.aaa_servers[aaa_server].dot1x is defined %}
+aaa authentication dot1x default group {{ aaa_server }}
+aaa authorization network default group {{ aaa_server }}
+aaa accounting dot1x default start-stop group {{ aaa_server }}
+authentication critical recovery delay 1000
+dot1x system-auth-control
+dot1x test timeout 3
+dot1x critical eapol
+{%              endif %}
+{%          endfor %}
+{%      endif %}
+{%  endif %}

@@ -1,0 +1,130 @@
+---
+
+platform_defaults:
+  type: 3850
+  
+platform_qos:
+  table_maps:
+    Policed-DSCP: 
+      maps:
+        - " 24 46 to 8"
+
+  class_maps:
+    Qos-Skype-VoIP-Audio:
+      acl: ACL-Skype-VoIP-Audio
+
+    Qos-Video:
+      dscp:
+         - cs4
+
+    Qos-Scavenger:
+      dscp:
+         - cs1
+
+    Qos-Skype-VoIP-Signalling:
+      acl: ACL-Skype-VoIP-Signalling
+
+    Qos-Priority:
+      dscp:
+        - ef
+        - cs5
+
+    VOICE:
+      cos:
+        - 5
+
+    Qos-VoIP-Data:
+      dscp:
+        - ef
+
+    SIGNALING:
+      cos:
+        - 3
+
+    Qos-VoIP-Signalling:
+      dscp:
+        - cs3
+
+    Qos-SECURITY+NTWK-CTRL:
+      dscp:
+        - cs2
+
+    Qos-SECURITY:
+      acl: SECURITY_Subnet
+
+  policy_maps:
+    QoS-OUT-PO-Dist:
+      classes:
+        Qos-Priority:
+          priority_level: 1
+          cir: "percent 10"
+
+        Qos-SECURITY+NTWK-CTRL:
+          bandwidth: 25
+
+        Qos-Scavenger:
+          bandwidth: 5
+
+        class-default:
+          bandwidth: 60
+
+    QoS-IN:
+      classes:
+        Qos-VoIP-Data:
+          dscp: ef
+          cir: 128000
+          conform: true
+          exceed: true
+
+        Qos-VoIP-Signalling:
+          dscp: cs3
+          cir: 32000
+          conform: true
+          exceed: true
+
+        Qos-Video:
+          dscp: cs4
+
+        Qos-SECURITY:
+          dscp: cs2
+
+        Qos-Skype-VoIP-Audio:
+          dscp: ef
+          cir: 128000
+          conform: true
+          exceep: true
+
+        Qos-Skype-VoIP-Signalling:
+          dscp: cs3
+          cir: 32000
+          conform: true
+          exceed: true
+
+        VOICE:
+          dscp: ef
+          cir: 128000
+          conform: true
+          exceed: true
+
+        SIGNALING:
+          dscp: cs3
+          cir: 32000
+          conform: true
+          exceed: true
+
+        class-default:
+          set_default: true
+    
+    QoS-OUT-Access:
+      classes:
+        Qos-Priority:
+          priority_level: 1
+
+        Qos-SECURITY+NTWK-CTRL:
+          bandwidth: 25
+
+        Qos-Scavenger:
+          bandwidth: 5
+
+        class-default:
+          bandwidth: 60

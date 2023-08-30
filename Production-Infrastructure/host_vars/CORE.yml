@@ -1,0 +1,448 @@
+---
+
+host_defaults:
+  hostname: CORE
+  snmp_engineid: 1111111111
+  snmp_server_location: PRIMARY DATA CENTER
+  logging_levels:
+    informational:
+      - console
+
+host_multicast:
+  pim: true
+  pim_dm_fallback: false
+  vrfs:
+    BLUE_OPZone:
+      rp_address: 10.111.255.254
+      multicast_routing: true
+
+host_vrfs:
+  global:
+    tag: 1
+    message_digest: true
+    stub: no-summary
+    default_originate: true
+    passive_interfaces:
+      - Vlan2
+    networks:
+      "0":
+        value:
+        - "172.18.0.1 0.0.0.0"
+
+      "1":
+        value:
+        - "172.20.0.0 0.0.255.255"
+    summary: "172.18.0.0 255.254.0.0"
+    summary_cost: "10"
+
+  GREEN_Zone:
+    tag: 10
+    area_0: true
+    multicast: true
+    message_digest: true
+    stub: no-summary
+    redistribute: "static subnets route-map WAN"
+    networks:
+      "0":
+        value:
+        - "172.20.200.0 0.0.0.3"
+        - "172.20.201.4 0.0.0.3"
+        - "172.20.202.0 0.0.0.15"
+        - "192.168.1.0 0.0.0.15"
+
+      "10":
+        value:
+        - "172.20.0.0 0.0.255.255"
+    summary: "10.10.0.0 255.255.0.0"
+    summary_cost: "10"
+
+  RED_Zone:
+    tag: 20
+    area_0: true
+    message_digest: true
+    stub: no-summary
+    networks:
+      "0":
+        value:
+        - "172.20.200.12 0.0.0.3"
+        - "172.20.201.16 0.0.0.3"
+        - "172.20.202.16 0.0.0.15"
+
+      "20":
+        value:
+        - "10.103.20.0 0.0.0.127"
+        - "10.103.52.0 0.0.3.255"
+        - "10.103.56.0 0.0.7.255"
+        - "172.20.0.0 0.0.255.255"
+
+  BLUE_Zone:
+    tag: 30
+    area_0: true
+    message_digest: true
+    stub: no-summary
+    networks:
+      "0":
+        value:
+        - "172.20.200.24 0.0.0.3"
+        - "172.20.201.28 0.0.0.3"
+        - "172.20.202.32 0.0.0.15"
+      "30":
+        value:
+        - "172.20.0.0 0.0.255.255"
+
+  SECURITY:
+    tag: 40
+    area_0: true
+    message_digest: true
+    stub: no-summary
+    networks:
+      "0":
+        value:
+        - "172.20.200.36 0.0.0.3"
+        - "172.20.201.40 0.0.0.3"
+        - "172.20.202.48 0.0.0.15"
+
+      "40":
+        value:
+        - "172.20.0.0 0.0.255.255"
+    summary: "10.216.0.0 255.248.0.0"
+    summary_cost: "10"
+
+  WAN_Zone:
+    tag: 100
+    area_0: true
+    message_digest: true
+    summary_addresses:
+      - "10.0.0.0 255.0.0.0"
+      - "172.16.0.0 255.240.0.0"
+      - "192.168.0.0 255.255.0.0"
+    redistribute: "static subnets route-map Azure_Redistribution"
+    networks:
+      "0":
+        value:
+        - "172.20.0.0 0.0.0.3"
+
+host_vrf_lists:
+  DIST01:
+    lists:
+    - SECURITY
+    - GREEN_OPZone
+    - BLUE_OPZone
+    - RED_OPZone
+
+  DIST02:
+    lists:
+    - SECURITY
+    - GREEN_OPZone
+    - BLUE_OPZone
+
+host_vlans:
+   300:
+    name: GREEN
+
+   301:
+    name: RED
+
+   302:
+    name: BLUE
+
+   303:
+    name: SECURITY
+
+host_spanning_tree_values:
+   24576:
+    - 300-303
+
+host_loopback_interfaces:
+  Loopback0:
+    description: "In-Band Management"
+    ip: 172.16.0.1
+    subnet_mask: 255.255.255.255
+
+host_virtual_interfaces:
+  Vlan300:
+    description: "GREEN"
+    mac_address: 0025.b5f1.0000
+    vrf: GREEN_ZONE
+    ip_address: "172.20.205.2 255.255.255.240"
+    message_digest_key: 072C285F4D06395647425F5C54
+    point_to_point: true
+
+  Vlan301:
+    description: "RED"
+    mac_address: 0025.b5f1.0100
+    vrf: RED_ZONE
+    ip_address: "172.20.205.18 255.255.255.240"
+    message_digest_key: 13261E01080324797B757C6364
+    point_to_point: true
+
+  Vlan302:
+    description: "BLUE"
+    mac_address: 0025.b5f1.0200
+    vrf: BLUE_ZONE
+    ip_address: "172.20.205.34 255.255.255.240"
+    message_digest_key: 123A0C0411042C577A79707861
+    point_to_point: true
+
+  Vlan303:
+    description: "SECURITY"
+    mac_address: 0025.b5f1.0300
+    vrf: SECURITY
+    ip_address: "172.20.205.50 255.255.255.240"
+    message_digest_key: 05280F1C22436E5A4956434258
+    point_to_point: true
+
+host_port_channels:
+  Port-channel1:
+    port_channel: 1
+    description: "DIST01 UPLINK"
+    switchport: false
+    vnet_list: DIST01
+    ip_address: "172.20.10.1 255.255.255.252"
+    message_digest_key: 0802455D0A1625414A
+    point_to_point: true
+    guard_root: true
+    members:
+      TenGigabitEthernet1/1/1:
+        ip_address: false
+        service_policy:
+          type: lan-queuing
+          output: PM-QoS-OUT
+        lacp: active
+
+      TenGigabitEthernet2/1/1:
+        ip_address: false
+        service_policy:
+          type: lan-queuing
+          output: PM-QoS-OUT
+        lacp: active
+
+  Port-channel2:
+    port_channel: 2
+    description: "DIST02 UPLINK"
+    switchport: false
+    vnet_list: DIST02
+    ip_address: "172.20.20.1 255.255.255.252"
+    message_digest_key: 096F471A1A0A37425F3825107C75
+    point_to_point: true
+    guard_root: true
+    members:
+      TenGigabitEthernet1/1/2:
+        ip_address: false
+        service_policy:
+          type: lan-queuing
+          output: PM-QoS-OUT
+        lacp: active
+
+      TenGigabitEthernet2/1/2:
+        ip_address: false
+        service_policy:
+          type: lan-queuing
+          output: PM-QoS-OUT
+        lacp: active
+
+  Port-channel50:
+    port_channel: 50
+    description: "N7K-1-L3-PO"
+    switchport: false
+    ip_address: false
+    members:
+      TenGigabitEthernet1/10/2:
+        description: "N7K-1-DATACENTER-e1/3"
+        lacp: active
+        service_policy:
+          type: lan-queuing
+          output: PM-QoS-OUT
+
+      TenGigabitEthernet1/10/3:
+        description: "N7K-1-DATACENTER-e1/4"
+        lacp: active
+        service_policy:
+          type: lan-queuing
+          output: PM-QoS-OUT
+
+      TenGigabitEthernet2/10/2:
+        description: "N7K-1-DATACENTER-e2/3"
+        lacp: active
+        service_policy:
+          type: lan-queuing
+          output: PM-QoS-OUT
+
+      TenGigabitEthernet2/10/3:
+        description: "N7K-1-DATACENTER-e2/4"
+        lacp: active
+        service_policy:
+          type: lan-queuing
+          output: PM-QoS-OUT
+
+    subinterfaces:
+      Port-channel50.100:
+        subinterface: 100
+        description: "N7K-1-L3-PO GREEN_Zone Transit"
+        vrf: GREEN_ZONE
+        ip_address: "172.20.204.1 255.255.255.252"
+        message_digest_key: 1531021F07250B76786765
+        point_to_point: true
+
+      Port-channel50.101:
+        subinterface: 101
+        description: "N7K-1-L3-PO RED_Zone Transit"
+        vrf: RED_Zone
+        ip_address: "172.20.204.13 255.255.255.252"
+        message_digest_key: 062506324F41294B55434359
+        point_to_point: true
+
+      Port-channel50.102:
+        subinterface: 102
+        description: "N7K-1-L3-PO BLUE_Zone Transit"
+        vrf: BLUE_Zone
+        ip_address: "172.20.204.25 255.255.255.252"
+        message_digest_key: 072C285F4D06395747465958
+        point_to_point: true
+
+      Port-channel50.103:
+        subinterface: 103
+        description: "N7K-1-L3-PO SECURITY Transit"
+        vrf: SECURITY
+        ip_address: "172.20.204.37 255.255.255.252"
+        message_digest_key: 1531021F07250B7678676674
+        point_to_point: true
+
+  Port-channel100:
+    port_channel: 100
+    description: "DIST01_Spanned_Vlans"
+    switchport: true
+    switchport_mode: trunk
+    switchport_nonegotiate: true
+    vlans: 100,200
+    service_policy:
+      input: PM-QoS-IN-Set_Default
+    guard_root: true
+    members:
+      GigabitEthernet1/13/3:
+        description: "DIST01_Spanned_Vlan"
+        lacp: active
+
+      GigabitEthernet2/13/3:
+        description: "DIST01_Spanned_Vlan"
+        lacp: active
+
+  Port-channel101:
+    port_channel: 101
+    description: "DIST02_Spanned_Vlan"
+    switchport: true
+    switchport_mode: trunk
+    switchport_nonegotiate: true
+    vlans: 100,200
+    service_policy:
+      input: PM-QoS-IN-Set_Default
+    guard_root: true
+    members:
+      GigabitEthernet1/13/4:
+        description: "DIST02_Spanned_Vlan"
+        lacp: active
+
+      GigabitEthernet2/13/4:
+        description: "DIST02_Spanned_Vlan"
+        lacp: active
+
+host_interfaces:
+  TenGigabitEthernet1/3/3:
+    type: unused
+
+  TenGigabitEthernet1/5/3:
+    type: unused    
+
+  TenGigabitEthernet1/5/4:
+    type: unused
+
+  TenGigabitEthernet1/5/5:
+    type: unused
+
+  GigabitEthernet1/13/41:
+    description: "OOB Switch"
+    switchport: true
+    switchport_mode: access
+    vlans: 3
+    cdp_enable: false
+
+  GigabitEthernet1/13/45:
+    description: "AzureExpressRoute Uplink"
+    switchport: false
+    vrf: WAN_Zone
+    ip_address: 172.20.0.1 255.255.255.252
+    portfast_edge: true
+    guard_root: true
+    bpdu_guard: true
+    cdp_enable: false
+
+  GigabitEthernet2/13/45:
+    description: "AzureExpressRoute Uplink"
+    switchport: false
+    vrf: WAN_Zone
+    ip_address: 172.20.0.5 255.255.255.252
+    portfast_edge: true
+    guard_root: true
+    bpdu_guard: true
+    cdp_enable: false
+    type: unused
+
+  GigabitEthernet2/13/48:
+    description: "FIREWALL Port 3"
+    switchport: true
+    switchport_mode: trunk
+    vlans: 512
+    portfast_edge: true
+    cdp_enable: false
+
+host_static_routes:
+  global:
+    routes:
+    - "0.0.0.0 0.0.0.0 172.20.205.114 name Management_Outside_to_Firewall"
+    - "172.18.128.0 255.255.192.0 172.20.205.114 name Switch_Management_Traffic"
+    - "172.18.130.0 255.255.255.0 172.18.127.60 name 802.1.x_RADIUS_Load_Balancer"
+    - "172.18.192.0 255.255.224.0 192.168.220.132 name WAN_Management_to_Firewall"
+    - "172.19.192.0 255.255.224.0 192.168.220.132 name WAN_WAPs_to_Firewall"
+
+  GREEN_Zone:
+    routes:
+    - "10.224.0.0 255.252.0.0 192.168.220.148 name WAN GREEN_Zone_Transit_to_Firewall"
+    - "192.168.36.0 255.255.255.0 192.168.220.33 name Voice_Transit_to_Firewall"
+
+  WAN_Zone:
+    routes:
+    - "0.0.0.0 0.0.0.0 172.20.205.146 name WAN Traffic_to_Azure_Express_Route"
+    - "10.0.0.0 255.0.0.0 172.20.205.146 name WAN Traffic to Azure_Express_Route"
+    - "172.16.0.0 255.240.0.0 172.20.205.146 name WAN Traffic to Azure_Express_Route"
+    - "192.168.0.0 255.255.0.0 172.20.205.146 name WAN Traffic to Azure_Express_Route"
+    
+host_access_lists:
+  "11":
+    permission: permit
+    network: 10.224.0.0 0.3.255.255
+
+  "12":
+    permission: permit
+    network: 10.10.0.0 0.0.255.255
+
+host_prefix_lists:
+  Azure_Redistribution:
+    lists:
+      "5":
+        permission: permit
+        network: 10.0.0.0/8
+      "10":
+        permission: permit
+        network: 172.16.0.0/12
+      "15":
+        permission: permit
+        network: 192.168.0.0/16
+
+host_route_maps:
+  Azure_Redistribution:
+    permission: permit
+    match: prefix_list
+
+  WAN:
+    permission: permit
+    match: 11

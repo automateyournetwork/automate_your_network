@@ -1,0 +1,34 @@
+{%  if platform_defaults.type == 6000 %}
+{%      for class_map in platform_qos.class_maps %}
+{%          for map in platform_qos.class_maps[class_map].maps %}
+class-map type {{ class_map }} {{ platform_qos.class_maps[class_map].maps[map].match }} {{ map }}
+{%              for dscp in platform_qos.class_maps[class_map].maps[map].dscp %}
+ match dscp {{ dscp }}
+{%              endfor %}
+{%          endfor %}
+{%      endfor %}
+{%      for policy_map in platform_qos.policy_maps %}
+{%          if platform_qos.policy_maps[policy_map].type is defined %}
+policy-map type {{ platform_qos.policy_maps[policy_map].type }} {{ policy_map }}
+{%              for class in platform_qos.policy_maps[policy_map].classes %}
+ class type {{ platform_qos.policy_maps[policy_map].type }} {{ class }}
+{%                  if platform_qos.policy_maps[policy_map].classes[class].percent is defined %}
+    bandwidth remaining percent {{ platform_qos.policy_maps[policy_map].classes[class].percent }}  
+{%                  else %}
+{%                      if platform_qos.policy_maps[policy_map].classes[class].priority is defined %}
+    priority
+{%                      endif %}
+{%                  endif %}
+{%              endfor %}
+{%              if platform_qos.policy_maps[policy_map].class_default == true %}
+ class class-default
+{%              endif %}
+{%          else %}
+policy-map {{ policy_map }}
+{%              if platform_qos.policy_maps[policy_map].class_default == true %}
+ class class-default
+   set {{ platform_qos.policy_maps[policy_map].set_default }}
+{%              endif %}
+{%          endif %}
+{%      endfor %}
+{%  endif %}

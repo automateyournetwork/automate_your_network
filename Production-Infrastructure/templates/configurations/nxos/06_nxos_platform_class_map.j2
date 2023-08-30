@@ -1,0 +1,27 @@
+{%  if platform_class_maps is defined %}
+{%      for platform_class_map in platform_class_maps %}
+{%          if platform_class_map == "qos" %}
+{%              for map in platform_class_maps[platform_class_map].maps %}
+class-map type {{ platform_class_map }} match-any {{ map }}
+{%                  if platform_class_maps[platform_class_map].maps[map].cos is defined %}
+  match cos {{ platform_class_maps[platform_class_map].maps[map].cos }}
+{%                  endif %}
+{%                  if platform_class_maps[platform_class_map].maps[map].dscp is defined %}
+  match dscp {{ platform_class_maps[platform_class_map].maps[map].dscp }}
+{%                  endif %}
+{%                  if platform_class_maps[platform_class_map].maps[map].acl is defined %}
+  match access-group name {{ platform_class_maps[platform_class_map].maps[map].acl }}
+{%                  endif %}
+{%              endfor %}
+{%          else %}
+{%              if platform_class_map == "queuing" or platform_class_map == "network-qos" %}
+{%                  for map in platform_class_maps[platform_class_map].maps %}
+class-map type {{ platform_class_map }} {{ map }}
+{%                      if platform_class_maps[platform_class_map].maps[map].group is defined %}
+  match qos-group {{ platform_class_maps[platform_class_map].maps[map].group }}
+{%                      endif %}
+{%                  endfor %}
+{%              endif %}
+{%          endif %}
+{%      endfor %}
+{%  endif %}

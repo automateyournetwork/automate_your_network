@@ -1,0 +1,18 @@
+---
+
+- name: run ip route vrf
+  ios_command:
+   commands: show ip route vrf {{ item }}
+   provider: "{{ ioscli }}"
+  with_items:
+    - SECURITY
+    - GREEN_Zone
+    - BLUE_Zone
+    - RED_Zone
+  register: iproutevrf_result
+
+- set_fact: SECURITY={{ iproutevrf_result.results[0].stdout_lines | to_nice_yaml }}
+- set_fact: GREEN_Zone={{ iproutevrf_result.results[1].stdout_lines | to_nice_yaml }}
+- set_fact: BLUEZone={{ iproutevrf_result.results[2].stdout_lines | to_nice_yaml }}
+- set_fact: RED_Zone={{ iproutevrf_result.results[3].stdout_lines | to_nice_yaml }}
+- set_fact: iproutevrf_all={{ SECURITY }}{{ RED_Zone }}{{ BLUE_Zone }}{{ GREEN_Zone }}

@@ -1,0 +1,7 @@
+---
+
+  - name: Create IOS DOT1X RADIUS
+    ios_config: 
+      src: ../../templates/configurations/ios/18_ios_dot1x_radius.j2
+      provider: "{{ ioscli }}" 
+    register: global_config_results 

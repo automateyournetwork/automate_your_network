@@ -1,0 +1,7 @@
+---
+
+  - name: Create IOS VSL Links
+    ios_config: 
+      src: ../../templates/configurations/ios/04_ios_vsl.j2
+      provider: "{{ ioscli }}" 
+    register: global_config_results 

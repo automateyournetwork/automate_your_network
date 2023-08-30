@@ -1,0 +1,41 @@
+{% if  global_dc_defaults.vrfs is defined %}
+{%     for vrf in global_dc_defaults.vrfs %}
+vrf context {{ vrf }}
+{%         if global_dc_defaults.vrfs[vrf].description is defined %}
+  description {{ global_dc_defaults.vrfs[vrf].description }}
+{%         endif %}
+{%         for static_route in global_dc_defaults.vrfs[vrf].static_routes %}
+  ip route {{ static_route.network }} {{ static_route.gateway }}
+{%         endfor %}
+{%     endfor %}
+{% endif %}
+
+{% if  platform_vrfs is defined %}
+{%     for platform_vrf in platform_vrfs %}
+vrf context {{ platform_vrf }}
+{%         if platform_vrfs[platform_vrf].description is defined %}
+  description {{ platform_vrfs[platform_vrf].description }}
+{%         endif %}
+{%         if platform_vrfs[platform_vrf].static_routes is defined %}
+{%             for static_route in platform_vrfs[platform_vrf].static_routes %}
+  ip route {{ static_route.network }} {{ static_route.gateway }}
+{%             endfor %}
+{%         endif %}
+{%     endfor %}
+{% endif %}
+
+{% if platform_defaults.type == 7000 %}
+router ospf 100
+{%     for platform_vrf in platform_vrfs %}
+{%         if platform_vrfs[platform_vrf].ospf is defined %}
+  vrf {{ platform_vrf }}
+    router-id 170.170.{{ platform_vrfs[platform_vrf].ospf.area }}.{{ host_defaults.ospf_router_id }}
+    area 0.0.0.{{ platform_vrfs[platform_vrf].ospf.area }} {{ platform_vrfs[platform_vrf].ospf.type }}
+{%             if platform_vrfs[platform_vrf].ospf.redistribute is defined %}
+    redistribute {{ platform_vrfs[platform_vrf].ospf.redistribute }} route-map {{ platform_vrfs[platform_vrf].ospf.route_map }}
+{%             endif %}
+    log-adjacency-changes
+    passive-interface default
+{%         endif %}
+{%     endfor %}
+{% endif %}

@@ -1,0 +1,37 @@
+{%  for access_list in global_campus_access_lists %}
+{%      if global_campus_access_lists[access_list].permit is defined %}
+{%          for permit in global_campus_access_lists[access_list].permit %}
+access-list {{ access_list }} permit {{ permit }}
+{%          endfor %}
+{%      endif %}
+{%      if global_campus_access_lists[access_list].deny is defined %}
+{%          for deny in global_campus_access_lists[access_list].deny %}
+access-list {{ access_list }} deny {{ deny }}
+{%          endfor %}
+{%      endif %}
+{%  endfor %}
+{%  if platform_access_lists is defined %}
+{%      for access_list in platform_access_lists %}
+ip access-list extended {{ access_list }}
+{%          for rule in platform_access_lists[access_list].rules %}
+{%              if platform_access_lists[access_list].rules[rule].permit == true %}
+{%                  if platform_access_lists[access_list].rules[rule].start_range is defined %}
+ permit {{ platform_access_lists[access_list].rules[rule].type }} {{ platform_access_lists[access_list].rules[rule].source }} {{ platform_access_lists[access_list].rules[rule].source_mask}} {{ platform_access_lists[access_list].rules[rule].destination }} {{ platform_access_lists[access_list].rules[rule].destination_mask }} range {{ platform_access_lists[access_list].rules[rule].start_range }} {{ platform_access_lists[access_list].rules[rule].end_range }}
+{%                  else %}
+{%                      if platform_access_lists[access_list].rules[rule].destination_any is defined %}
+ permit {{ platform_access_lists[access_list].rules[rule].type }} {{ platform_access_lists[access_list].rules[rule].source }} {{ platform_access_lists[access_list].rules[rule].source_mask}} any
+{%                      else %}
+ permit {{ platform_access_lists[access_list].rules[rule].type }} {{ platform_access_lists[access_list].rules[rule].source }} {{ platform_access_lists[access_list].rules[rule].source_mask}} {{ platform_access_lists[access_list].rules[rule].destination }} {{ platform_access_lists[access_list].rules[rule].destination_mask }}
+{%                      endif %}
+{%                  endif %}
+{%              else %}
+ deny {{ platform_access_lists[access_list].rules[rule].type }} {{ platform_access_lists[access_list].rules[rule].source }} {{ platform_access_lists[access_list].rules[rule].source_mask }} {{ platform_access_lists[access_list].rules[rule].destination }} {{ platform_access_lists[access_list].rules[rule].destinaton_mask }}
+{%              endif %}
+{%          endfor %}
+{%      endfor %}
+{%  endif %}
+{%  if host_access_lists is defined %}
+{%      for host_access_list in host_access_lists %}
+access-list {{ host_access_list }} {{ host_access_lists[host_access_list].permission }} {{ host_access_lists[host_access_list].network }}
+{%      endfor %}
+{%  endif %}

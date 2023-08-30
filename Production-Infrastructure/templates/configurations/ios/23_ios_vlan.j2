@@ -1,0 +1,8 @@
+vlan {{ global_campus_defaults.native_vlan }}
+ name NativeVLAN
+{%  if host_vlans is defined %}
+{%      for host_vlan in host_vlans %}
+vlan {{ host_vlan }}
+ name {{ host_vlans[host_vlan].name }}
+{%     endfor %} 
+{%  endif %}

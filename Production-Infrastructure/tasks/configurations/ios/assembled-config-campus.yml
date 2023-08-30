@@ -1,0 +1,7 @@
+---
+
+  - name: Assembled IOS Configuration for Campus
+    ios_config: 
+      src: '../../templates/configurations/ios_combined/assembled-config-campus.j2'
+      provider: "{{ ioscli }}" 
+    register: global_config_results 

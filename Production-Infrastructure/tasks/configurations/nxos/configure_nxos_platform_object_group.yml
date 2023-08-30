@@ -1,0 +1,8 @@
+---
+
+- name: Create NXOS Platform Object Group
+  nxos_config: 
+    src: ../../templates/configurations/nxos/02_nxos_platform_object_group.j2
+    provider: "{{ nxoscli }}" 
+  tags: vlan 
+  register: acls_config_results 

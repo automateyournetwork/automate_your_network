@@ -1,0 +1,66 @@
+{%  if platform_defaults.type == 3750 or platform_defaults.type == 2960 %}
+{%      for map in platform_qos.maps %}
+{%          if map == "policed-dscp" %}
+mls qos map {{ map }}  {{ platform_qos.maps[map].value }}
+{%          else %}
+mls qos map {{ map }} {{ platform_qos.maps[map].value }}
+{%          endif %}
+{%      endfor %}
+mls qos srr-queue input bandwidth {{ platform_qos.bandwidth.input }}
+{%      for srr_queue in platform_qos.srr_queues %}
+{%          for type in platform_qos.srr_queues[srr_queue].types %}
+{%              for map in platform_qos.srr_queues[srr_queue].types[type].maps %}
+{%                  for map_value in platform_qos.srr_queues[srr_queue].types[type].maps[map].map_values %}
+mls qos srr-queue {{ srr_queue }} {{ type }} queue {{ map }} threshold {{ map_value }}
+{%                  endfor %} 
+{%              endfor %}  
+{%          endfor %}
+{%      endfor %}
+{%      for queue_set_threshold in platform_qos.queue_set_thresholds %}
+{%          for type in platform_qos.queue_set_thresholds[queue_set_threshold].types %}
+{%              for map in platform_qos.queue_set_thresholds[queue_set_threshold].types[type].maps %}
+{%                  for map_value in platform_qos.queue_set_thresholds[queue_set_threshold].types[type].maps[map].map_values %}
+mls qos queue-set {{ queue_set_threshold }} 1 {{ type }} {{ map }} {{ map_value }}
+{%                  endfor %}
+{%              endfor %}
+{%          endfor %}
+{%      endfor %}
+{%      for queue_set_buffer in platform_qos.queue_set_buffers %}
+{%          for type in platform_qos.queue_set_buffers[queue_set_buffer].types %}
+{%              for map in platform_qos.queue_set_buffers[queue_set_buffer].types[type].maps %}
+{%                  for map_value in platform_qos.queue_set_buffers[queue_set_buffer].types[type].maps[map].map_values %}
+mls qos queue-set {{ queue_set_buffer }} 1 {{ type }} {{ map_value }}
+{%                  endfor %}
+{%              endfor %}
+{%          endfor %}
+{%      endfor %}
+mls qos 
+{%      for class_map in platform_qos.class_maps %}
+{%          if platform_qos.class_maps[class_map].type == "any" %}
+class-map match-any {{ class_map }}
+ match {{ platform_qos.class_maps[class_map].match }}
+{%          else %}
+{%              if platform_qos.class_maps[class_map].type == "all" %}
+class-map match-all {{ class_map }}
+ match {{ platform_qos.class_maps[class_map].match }}
+{%              endif %}
+{%          endif %}
+{%      endfor %}
+{%      for policy_map in platform_qos.policy_maps %}
+policy-map {{ policy_map }}
+{%          for class in platform_qos.policy_maps[policy_map].classes %}
+ class {{ class }}
+{%              if platform_qos.policy_maps[policy_map].classes[class].set is defined %}
+  set {{ platform_qos.policy_maps[policy_map].classes[class].set }}
+{%              endif %}
+{%              if platform_qos.policy_maps[policy_map].classes[class].police is defined %}
+{%                  if platform_defaults.type != 2960 %}
+  police {{ platform_qos.policy_maps[policy_map].classes[class].police }} exceed-action policed-dscp-transmit
+{%                  endif %}
+{%              endif %}
+{%              if platform_qos.policy_maps[policy_map].classes[class].trust is defined %}
+  trust {{ platform_qos.policy_maps[policy_map].classes[class].trust }}
+{%              endif %}
+{%          endfor %}
+{%      endfor %}
+{%  endif %}

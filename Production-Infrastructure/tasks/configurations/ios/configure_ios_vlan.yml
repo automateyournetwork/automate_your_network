@@ -1,0 +1,7 @@
+---
+
+- name: Create IOS VLAN configuration 
+  ios_config: 
+    src: ../../templates/configurations/ios/23_ios_vlan.j2
+    provider: "{{ ioscli }}" 
+  register: global_config_results 

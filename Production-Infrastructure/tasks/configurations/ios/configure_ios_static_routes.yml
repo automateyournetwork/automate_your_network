@@ -1,0 +1,7 @@
+---
+
+  - name: Create IOS Static Routes
+    ios_config: 
+      src: ../../templates/configurations/ios/22_ios_static_routes.j2
+      provider: "{{ ioscli }}" 
+    register: global_config_results 

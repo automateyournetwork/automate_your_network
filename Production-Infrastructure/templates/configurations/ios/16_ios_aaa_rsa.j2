@@ -1,0 +1,18 @@
+aaa group server radius group1 
+{%  for rsa_radius_server in platform_defaults.rsa_radius_servers %}
+{%      if platform_defaults.type != 3850 %}
+ server {{ rsa_radius_server }}
+radius-server host {{ rsa_radius_server }} key 7 {{ platform_defaults.rsa_radius_servers[rsa_radius_server].key }}
+{%      else %}
+ server name {{ rsa_radius_server }}
+radius server {{ rsa_radius_server }}
+ address ipv4 {{ platform_defaults.rsa_radius_servers[rsa_radius_server].address }} auth-port {{ platform_defaults.rsa_radius_servers[rsa_radius_server].auth_port }} acct-port {{ platform_defaults.rsa_radius_servers[rsa_radius_server].acct_port }}
+ timeout {{ platform_defaults.rsa_radius_servers[rsa_radius_server].timeout }}
+ retransmit {{ platform_defaults.rsa_radius_servers[rsa_radius_server].retransmit }}
+ key 7 {{ platform_defaults.rsa_radius_servers[rsa_radius_server].key}}
+{%      endif %}
+{%  endfor %}
+aaa authentication login default group group1 local
+radius-server dead-criteria time 120 tries 3
+radius-server timeout 30
+radius-server deadtime 2

@@ -1,0 +1,7 @@
+---
+
+  - name: Create IOS Energywise
+    ios_config: 
+      src: ../../templates/configurations/ios/08_ios_energywise.j2
+      provider: "{{ ioscli }}" 
+    register: global_config_results 
