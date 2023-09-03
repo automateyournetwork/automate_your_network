@@ -145,3 +145,61 @@ Page 41
 
 interactive git branching guide
 https://learngitbranching.js.org/
+
+-------
+Page 54
+-------
+
+Modern Network Development Lifecycle (NDLC)
+
+ Create a repository specific to the environment in TFS:
+o Examples include: Production, Lab, Development.
+ Create a master branch:
+o The master branch will be what is considered tested, approved, current, golden configurations
+and code.
+o Never develop or make changes directly inside the master branch.
+o Use Git commits and pull requests to merge changes into the master branch.
+o Playbooks should be executed from the master branch.
+ Create a working branch:
+o All changes performed in working branch.
+o Playbook tested and validated possibly with check mode and verbosity.
+o Changes understood.
+o Commits from local repository made often to ensure TFS version updates often.
+o Prevents local work from being lost.
+o Ensures ability to collaborate on branches.
+o Pull request to merge changes into master branch.
+o An entire workflow can be created from the pull request.
+o Various QA and approvals.
+o Changes merged successfully into master branch.
+ Clone repository locally:
+o git clone
+o Brings the repository down to a local Windows or Linux machine.
+o Extremely portable provided Linux and Ansible are installed.
+ Change to working branch:
+o git checkout
+o VS Code GUI to change into new working branch.
+ Make changes:
+o Modify existing files.
+o Create new files.Chapter 3 How to Automate the Network? | 55
+o Delete files.
+ Stage changes:
+o git add
+o VS Code GUI to save local changes.
+ Commit changes:
+o git commit
+o Using VS Code GUI.
+o Add meaningful comment to the commit.
+o Commit is referenced and available in TFS and VS Code.
+ Push changes:
+o git push
+o VS Code synchronization.
+o This finalizes the commit and pushes the files into the central repository.
+ Pull request:
+o A pull request in TFS is created to merge the working branch into the master branch.
+o A full workflow can accompany this pull request that could require reviewers and approvals.
+ Version and change control:
+o All changes can be referred to by their pull request.
+o Each pull request comprised of Git commits.
+o Complete history of changes to all files available through TFS.
+o Easy roll-backs.
+o Easy troubleshooting problematic changes.
