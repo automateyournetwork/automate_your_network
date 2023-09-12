@@ -1,0 +1,9 @@
+---
+
+- name: Create NXOS Platform Interface configuration 
+  nxos_config: 
+    src: ../../templates/configurations/nxos/17_nxos_platform_interface.j2
+    provider: "{{ nxoscli }}" 
+    timeout: 600    
+  tags: vlan 
+  register: interface_config_results 

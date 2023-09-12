@@ -1,0 +1,8 @@
+---
+
+- name: Create NXOS Platform Route Map
+  nxos_config: 
+    src: ../../templates/configurations/nxos/05_nxos_platform_route_map.j2
+    provider: "{{ nxoscli }}" 
+  tags: vlan 
+  register: acls_config_results 

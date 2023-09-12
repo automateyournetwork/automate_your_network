@@ -1,0 +1,5 @@
+---
+- name: Copy Run TFTP 
+  ios_command:
+    commands: copy running-config tftp://10.10.100.100/{{inventory_hostname}}_{{ output_file }}.cfg
+    provider: "{{ ioscli }}"

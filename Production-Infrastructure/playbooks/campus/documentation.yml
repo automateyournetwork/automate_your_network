@@ -1,0 +1,56 @@
+--- 
+ 
+- hosts: CAMPUS
+
+  tasks: 
+    - name: create IOS combined template 
+      assemble: 
+        src: ../../templates/configurations/ios/
+        dest: '../../templates/documentation/ios/ios_combined.j2'
+      delegate_to: localhost
+      run_once: true 
+
+    - import_tasks: ../../tasks/audit/ios/ios_gather_facts.yml
+    - set_fact: ios_config_file=../../configurations/ios/{{inventory_hostname}}.cfg 
+
+    - name: create running configuration per device 
+      template: 
+        src: '../../templates/documentation/ios/ios_combined.j2' 
+        dest: "{{ ios_config_file }}" 
+        trim_blocks: yes 
+
+- hosts: CAMPUS-CORE
+ 
+  vars: 
+      c6k_config: "{{ lookup('file', ios_config_file) }}" 
+ 
+  tasks: 
+      
+     - name: create Core documentation per device 
+       template: 
+         src: '../../templates/documentation/ios/6k_documentation.j2' 
+         dest: '../../documentation/campus/{{inventory_hostname}}-intent.md' 
+
+- hosts: CAMPUS-DIST
+ 
+  vars: 
+      c4k_config: "{{ lookup('file', ios_config_file) }}" 
+ 
+  tasks: 
+      
+     - name: create Distribution Layer documentation per device 
+       template: 
+         src: '../../templates/documentation/ios/4k_documentation.j2' 
+         dest: '../../documentation/campus/{{inventory_hostname}}-intent.md' 
+
+- hosts: CAMPUS-ACCESS
+ 
+  vars: 
+      c3k_config: "{{ lookup('file', ios_config_file) }}" 
+ 
+  tasks: 
+      
+     - name: create Access Layer documentation per device 
+       template: 
+         src: '../../templates/documentation/ios/3k_documentation.j2' 
+         dest: '../../documentation/campus/{{inventory_hostname}}-intent.md' 

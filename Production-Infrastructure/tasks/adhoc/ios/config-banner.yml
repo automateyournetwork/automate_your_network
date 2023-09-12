@@ -1,0 +1,6 @@
+- name: Configure banner from file
+  ios_banner:
+    banner:  motd
+    text: "{{ lookup('file', '/etc/ansible/roles/config/raw-banner.cfg') }}"
+    state: present
+    provider: "{{ ioscli }}"

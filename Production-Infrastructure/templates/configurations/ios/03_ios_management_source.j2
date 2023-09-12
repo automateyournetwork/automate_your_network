@@ -1,0 +1,20 @@
+{%  if platform_defaults.type == 6000 %}
+ip radius source-interface Loopback0 
+logging source-interface Loopback0
+snmp-server trap-source Loopback0
+snmp-server source-interface informs Loopback0
+ntp source Loopback0
+ntp server 10.100.200.50
+ntp server 10.100.200.51 prefer
+ip ssh source-interface Loopback0
+ip tftp source-interface Loopback0
+{%  else %}
+ip radius source-interface Vlan718
+logging source-interface Vlan718
+snmp-server trap-source Vlan718
+snmp-server source-interface informs Vlan718
+ip ssh source-interface Vlan718
+ip tftp source-interface Vlan718
+ntp source Vlan718
+ntp server 172.16.0.1 prefer
+{%  endif %}

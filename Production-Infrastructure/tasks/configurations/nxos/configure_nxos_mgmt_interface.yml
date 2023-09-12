@@ -1,0 +1,8 @@
+---
+
+- name: Create NXOS MGMT Interface configuration 
+  nxos_config: 
+    src: ../../templates/configurations/nxos/12_nxos_mgmt_interface.j2
+    provider: "{{ nxoscli }}" 
+  tags: vlan 
+  register: interface_config_results 

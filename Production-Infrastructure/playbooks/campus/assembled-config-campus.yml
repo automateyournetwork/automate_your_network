@@ -1,0 +1,12 @@
+---
+
+- hosts: CAMPUS
+  tasks:
+    - name: create IOS combined template 
+      assemble: 
+        src: ../../templates/configurations/ios/
+        dest: '../../templates/configurations/ios_combined/assembled-config-campus.j2'
+      delegate_to: localhost
+      run_once: true
+    - import_tasks: ../../tasks/configurations/ios/assembled-config-campus.yml 
+    - import_tasks: ../../tasks/configurations/ios/ios_copyrunstart.yml

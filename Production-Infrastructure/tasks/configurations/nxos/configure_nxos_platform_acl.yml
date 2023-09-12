@@ -1,0 +1,8 @@
+---
+
+- name: Create NXOS Platform ACL
+  nxos_config: 
+    src: ../../templates/configurations/nxos/03_nxos_platform_acl.j2
+    provider: "{{ nxoscli }}" 
+  tags: vlan 
+  register: acls_config_results 

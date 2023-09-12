@@ -1,0 +1,9 @@
+{%  if platform_defaults.dot1x_radius_servers is defined %}
+{%      for dot1x_radius_server in platform_defaults.dot1x_radius_servers %}
+radius server {{ dot1x_radius_server }}
+ address ipv4 {{ platform_defaults.dot1x_radius_servers[dot1x_radius_server].address }} auth-port {{ platform_defaults.dot1x_radius_servers[dot1x_radius_server].auth_port }} acct-port {{ platform_defaults.dot1x_radius_servers[dot1x_radius_server].acct_port }}
+ timeout {{ platform_defaults.dot1x_radius_servers[dot1x_radius_server].timeout }}
+ automate-tester username {{ platform_defaults.dot1x_radius_servers[dot1x_radius_server].tester }} idle-time {{ platform_defaults.dot1x_radius_servers[dot1x_radius_server].idle_time }}
+ key 7 {{ platform_defaults.dot1x_radius_servers[dot1x_radius_server].key}}
+{%      endfor %}
+{%  endif %}

@@ -1,0 +1,6 @@
+---
+ioscli:
+  username: "ServiceAccount"
+  password: "{{ Service Account Password}}"
+  host: "{{inventory_hostname}}"
+  port: 22

@@ -1,0 +1,17 @@
+{%  if platform_port_profiles is defined %}
+{%      for platform_port_profile in platform_port_profiles %}
+{%          for profile in platform_port_profiles[platform_port_profile].profiles %}
+port-profile type {{ platform_port_profile }} {{ profile }}
+{%              if platform_port_profiles[platform_port_profile].profiles[profile].mode is defined %}
+  switchport mode {{ platform_port_profiles[platform_port_profile].profiles[profile].mode }}
+{%              endif %}
+{%              if platform_port_profiles[platform_port_profile].profiles[profile].mode == "trunk" %}
+  switchport trunk native vlan {{ global_dc_defaults.native_vlan }}
+  switchport trunk allowed vlan {{ platform_port_profiles[platform_port_profile].profiles[profile][inventory_hostname].vlan }}
+{%              endif %}
+{%              if platform_port_profiles[platform_port_profile].profiles[profile].state_enabled == true %}
+  state enabled
+{%              endif %}
+{%          endfor %}
+{%      endfor %}
+{%  endif %}

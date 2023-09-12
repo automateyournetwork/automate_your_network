@@ -1,0 +1,8 @@
+---
+
+- name: Create NXOS vrf configuration 
+  nxos_config: 
+    src: ../../templates/configurations/nxos/10_nxos_vrfs.j2
+    provider: "{{ nxoscli }}" 
+  tags: vlan 
+  register: vrf_config_results 

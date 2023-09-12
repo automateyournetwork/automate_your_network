@@ -1,0 +1,16 @@
+---
+
+- name: Configure DC Access Ports
+  nxos_config:
+    src: ../../templates/configurations/nxos/19_server_interfaces.j2
+    provider:
+      username: "Dcnmrsa"
+      password: "{{ DCNM_RSA_PASSWORD }}"
+      host: "{{inventory_hostname}}"
+      transport: cli
+  tags: dcaccess
+  register: dc_access_results
+
+- name: view output
+  debug:
+    msg: "{{ dc_access_results }}"

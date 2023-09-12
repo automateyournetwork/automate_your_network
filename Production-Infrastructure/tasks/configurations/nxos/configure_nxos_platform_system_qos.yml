@@ -1,0 +1,8 @@
+---
+
+- name: Create NXOS Platform System QoS
+  nxos_config: 
+    src: ../../templates/configurations/nxos/08_nxos_platform_system_qos.j2
+    provider: "{{ nxoscli }}" 
+  tags: vlan 
+  register: acls_config_results 

@@ -1,0 +1,8 @@
+{%  if platform_object_groups is defined %}
+{%      for platform_object_group in platform_object_groups %}
+object-group {{ platform_object_groups[platform_object_group].type }} {{ platform_object_group }}
+{%          for group in platform_object_groups[platform_object_group].groups %}
+  {{ group }} {{ platform_object_groups[platform_object_group].groups[group].ip }}
+{%          endfor %}
+{%      endfor %}
+{%  endif %}

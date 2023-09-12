@@ -1,0 +1,65 @@
+{%  if host_interfaces is defined %}
+{%      for host_interface in host_interfaces %}
+{%          if host_interfaces[host_interface].type is defined %}
+{%                  if host_interfaces[host_interface].type == "OPZone" %}
+interface {{ host_interface }}
+ switchport mode access
+ switchport nonegotiate
+ switchport access vlan {{ host_interfaces[host_interface].vlan }}
+{%                      if host_interfaces[host_interface].voice_vlan is defined %}
+ switchport voice vlan {{ host_interfaces[host_interface].voice_vlan }}
+{%                          if platform_defaults.type == 3750 or platform_defaults.type == 2960 %}
+ mls qos trust device cisco-phone
+ mls qos trust cos
+{%                          endif %}
+{%                          if platform_defaults.type == 3850 %}
+ trust device cisco-phone
+{%                          endif %}
+{%                      endif %}
+{%                      if host_defaults.poe is defined or platform_defaults.type == 2960%}
+{%                      else %}
+{%                          if host_interfaces[host_interface].voice_vlan is defined %}
+{%                          else %}
+ power inline never
+{%                          endif %}
+{%                      endif %}
+{%                      if platform_defaults.type != 2960 %}
+ authentication event server dead action authorize vlan {{ host_interfaces[host_interface].vlan }}
+ authentication event server dead action authorize voice
+{%                      endif %}
+ authentication host-mode multi-domain
+ authentication open
+ authentication order dot1x mab
+ authentication priority dot1x mab
+ authentication port-control auto
+ authentication periodic
+ mab
+ dot1x pae authenticator
+ dot1x timeout quiet-period 2
+ dot1x timeout tx-period 10
+{%                      if host_interfaces[host_interface].voice_vlan is defined or host_interfaces[host_interface].cdp_enable is defined %}
+{%                      else %}
+ no cdp enable
+{%                      endif %}
+{%                  if platform_defaults.type == 3750 or platform_defaults.type == 2960 %}
+{%                      if platform_defaults.role is not defined %}
+ srr-queue bandwidth share {{ platform_qos.platform_interface_values.srr_queue_share }}
+{%                          if platform_defaults.type == 2960 %}
+ srr-queue bandwidth shape {{ platform_qos.platform_interface_values.srr_queue_shape }}
+{%                          else %}
+ srr-queue bandwidth shape  {{ platform_qos.platform_interface_values.srr_queue_shape }}
+{%                          endif %}
+ priority-queue out
+{%                      endif %}
+{%                  endif %}
+ storm-control broadcast level 30.00
+ storm-control multicast level 30.00
+ no lldp transmit
+ no lldp receive
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+ service-policy input PM-QoS-IN
+{%                  endif %}
+{%              endif %}
+{%          endfor %}
+{%  endif %}

@@ -1,0 +1,7 @@
+---
+
+  - name: Create IOS Host Interface - Unused Ports - configuration 
+    ios_config: 
+      src: ../../templates/configurations/ios/29_ios_host_interfaces_unused.j2
+      provider: "{{ ioscli }}" 
+    register: global_config_results 

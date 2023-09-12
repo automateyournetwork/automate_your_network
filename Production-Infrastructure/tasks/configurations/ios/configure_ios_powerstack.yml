@@ -1,0 +1,7 @@
+---
+
+  - name: Create IOS Powerstack
+    ios_config: 
+      src: ../../templates/configurations/ios/05_ios_powerstack.j2
+      provider: "{{ ioscli }}" 
+    register: global_config_results 

@@ -1,0 +1,7 @@
+---
+
+  - name: Create IOS Default Gateways
+    ios_config: 
+      src: ../../templates/configurations/ios/07_ios_default_gateway.j2
+      provider: "{{ ioscli }}" 
+    register: global_config_results 

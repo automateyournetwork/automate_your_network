@@ -1,0 +1,7 @@
+---
+
+  - name: Create IOS Management Source VLANs
+    ios_config: 
+      src: ../../templates/configurations/ios/03_ios_management_source.j2
+      provider: "{{ ioscli }}" 
+    register: global_config_results 

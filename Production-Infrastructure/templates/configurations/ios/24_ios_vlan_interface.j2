@@ -1,0 +1,40 @@
+interface Vlan1
+ no ip address
+ shutdown
+
+{%  if host_virtual_interfaces is defined %}
+{%      for host_virtual_interface in host_virtual_interfaces %}
+interface {{ host_virtual_interface }}
+ description {{ host_virtual_interfaces[host_virtual_interface].description }}
+{%          if host_virtual_interfaces[host_virtual_interface].mac_address is defined %}
+ mac-address {{ host_virtual_interfaces[host_virtual_interface].mac_address }}
+{%          endif %}
+{%          if host_virtual_interfaces[host_virtual_interface].vrf is defined %}
+ vrf forwarding {{ host_virtual_interfaces[host_virtual_interface].vrf }}
+{%          endif %}
+{%          if host_virtual_interfaces[host_virtual_interface].ip_address is defined %}
+{%              if host_virtual_interfaces[host_virtual_interface].ip_address == false %}
+ no ip address
+{%              else %}
+ ip address {{ host_virtual_interfaces[host_virtual_interface].ip_address }}
+{%              endif %}
+{%         endif %}
+{%         if host_virtual_interfaces[host_virtual_interface].route_map is defined %}
+ ip policy route-map {{ host_virtual_interfaces[host_virtual_interface].route_map }}
+{%         endif %}
+{%         if host_virtual_interfaces[host_virtual_interface].ip_helper_profile is defined %}
+{%             for helper_address in global_dhcp_servers[host_virtual_interfaces[host_virtual_interface].ip_helper_profile] %}
+ ip helper-address {{ helper_address }}
+{%             endfor %}
+{%         endif %}
+{%         if host_virtual_interfaces[host_virtual_interface].message_digest_key is defined %}
+ ip ospf message-digest-key 1 md5 7 {{ host_virtual_interfaces[host_virtual_interface].message_digest_key }}
+{%         endif %}
+{%         if host_virtual_interfaces[host_virtual_interface].point_to_point is defined %}
+ ip ospf network point-to-point
+{%         endif %}
+{%         if host_virtual_interfaces[host_virtual_interface].pim is defined %}
+ ip pim {{ host_virtual_interfaces[host_virtual_interface].pim }}
+{%         endif %}
+{%      endfor %}
+{%  endif %}

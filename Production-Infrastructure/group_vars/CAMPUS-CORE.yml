@@ -1,0 +1,109 @@
+---
+
+platform_defaults:
+  type: 6000
+
+  boot: s2t54-ipservicesk9-mz.SPA.152-1.SY4.bin
+
+platform_qos:
+  class_maps:
+      lan-queuing:
+        maps:       
+          Qos-SECURITY+NTWK-CTRL:
+            match: match-any
+            dscp:
+              - "cs2  cs6  cs7"
+              - cs3
+          
+          Qos-Scavenger:
+            match: match-any
+            dscp: 
+              - cs1
+          
+          Qos-Priority:
+            match: match-any
+            dscp:
+              - ef
+              - cs5
+              - cs4
+  
+  policy_maps:
+    QoS-IN-Set_Default:
+      class_default: true
+      set_default: "dscp default"
+
+    QoS-OUT:
+      type: lan-queuing
+      class_default: true 
+      classes:
+        Qos-SECURITY+NTWK-CTRL:
+          percent: 25
+        Qos-Priority:
+          priority: true
+        Qos-Scavenger:
+          percent: 5
+
+platform_port_channels:
+  Port-channel10:
+    port_channel: 10
+    description: VSL
+    switchport: false
+    ip_address: false
+    vsl: 1
+    lacp_mode: "on"
+    Core:
+      members: 
+        TenGigabitEthernet1/7/4:
+          switchport: false
+          ip_address: false
+
+        TenGigabitEthernet1/7/5:
+          switchport: false
+          ip_address: false
+
+        TenGigabitEthernet1/8/4:
+          switchport: false
+          ip_address: false        
+
+        TenGigabitEthernet1/8/5:
+          switchport: false
+          ip_address: false
+
+  Port-channel20:
+    port_channel: 20
+    description: VSL
+    switchport: false
+    ip_address: false
+    vsl: 2
+    lacp_mode: "on"
+    Core:
+      members: 
+        TenGigabitEthernet2/7/4:
+          switchport: false
+          ip_address: false     
+
+        TenGigabitEthernet2/7/5:
+          switchport: false
+          ip_address: false
+
+        TenGigabitEthernet2/8/4:
+          switchport: false
+          ip_address: false       
+
+        TenGigabitEthernet2/8/5:
+          switchport: false
+          ip_address: false
+
+platform_interfaces:
+  Core:
+      GigabitEthernet1/13/1:
+        type: DAD
+
+      GigabitEthernet1/13/2:
+        type: DAD
+
+      GigabitEthernet2/13/1:
+        type: DAD
+
+      GigabitEthernet2/13/2:
+        type: DAD

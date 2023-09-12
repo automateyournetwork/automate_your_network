@@ -1,0 +1,20 @@
+{%  if host_interfaces is defined %}
+{%      for host_interface in host_interfaces %}
+{%          if host_interfaces[host_interface].type is defined %}
+{%              if host_interfaces[host_interface].type == "unused" %} 
+interface {{ host_interface }}
+{%                  if platform_defaults.type == 6000 %}
+ switchport
+ spanning-tree portfast edge
+{%                  else %}
+ spanning-tree portfast
+{%                  endif %}
+ switchport access vlan 99
+ shutdown
+ no cdp enable
+{%              endif %}
+{%          endif %}
+{%      endfor %}
+{%  endif %}
+
+

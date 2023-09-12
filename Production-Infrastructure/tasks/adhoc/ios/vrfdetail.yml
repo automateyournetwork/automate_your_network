@@ -1,0 +1,8 @@
+---
+- name: run show vrf detail
+  ios_command:
+    commands: show vrf detail | e label|Export|Import|import|global|export|ipv4|ipv6|0x0|CLI|Fa1|nterfaces|0xA|0x1808|Liin-vrf|mgmtVrf
+    provider: "{{ ioscli }}"
+  register: vrfdetail_result
+
+- set_fact: vrfdetail={{ vrfdetail_result.stdout_lines | to_nice_yaml }}

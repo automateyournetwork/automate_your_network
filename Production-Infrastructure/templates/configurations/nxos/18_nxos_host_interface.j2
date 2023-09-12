@@ -1,0 +1,60 @@
+{%  if host_interfaces is defined %}
+{%      for host_interface in host_interfaces %}
+interface {{ host_interface }}
+{%          if host_interfaces[host_interface].description is defined %}
+  description {{ host_interfaces[host_interface].description }}
+{%          endif %}
+{%          if host_interfaces[host_interface].trunk is defined %}
+  switchport mode trunk 
+  switchport trunk native vlan {{ global_dc_defaults.native_vlan }}
+  switchport trunk allowed vlan {{ host_interfaces[host_interface].trunk.allowed_vlan }}
+  spanning-tree port type edge trunk
+{%          else %}
+{%              if host_interfaces[host_interface].private_vlan_trunk_promiscuous is defined %}
+  switchport mode private-vlan trunk promiscuous
+  switchport trunk allowed vlan none
+  switchport private-vlan trunk allowed vlan {{ host_interfaces[host_interface].private_vlan_trunk_promiscuous.allowed_vlan }}
+  switchport private-vlan mapping trunk {{ host_interfaces[host_interface].private_vlan_trunk_promiscuous.mapping }}
+{%              else %}
+{%                  if host_interfaces[host_interface].private_vlan is defined %}
+  switchport mode private-vlan host
+  switchport private-vlan host-associate {{ host_interfaces[host_interface].private_vlan.associate }}
+{%                  else %}
+{%                      if host_interfaces[host_interface].vlan is defined %}
+  switchport access vlan {{ host_interfaces[host_interface].vlan }}
+{%                      endif %}
+{%                  endif %}
+{%              endif %}
+{%          endif %}
+{%          if host_interfaces[host_interface].service_policy is defined %}
+  service-policy type queuing input {{ host_interfaces[host_interface].service_policy.input }}
+  service-policy type queuing output {{ host_interfaces[host_interface].service_policy.output }}
+{%          endif %}
+{%          if host_interfaces[host_interface].ip_address is defined %}
+  ip address {{ host_interfaces[host_interface].ip_address }}
+{%          endif %}
+{%          if host_interfaces[host_interface].switchport is defined %}
+{%              if host_interfaces[host_interface].switchport == false %}
+  no switchport
+{%              endif %}
+{%          endif %}
+{%          if host_interfaces[host_interface].speed is defined %}
+  speed {{ host_interfaces[host_interface].speed }}
+{%          endif %}
+{%          if host_interfaces[host_interface].vrf is defined %}
+  vrf member {{ host_interfaces[host_interface].vrf }}
+{%          endif %}
+{%          if host_interfaces[host_interface].monitor is defined %}
+{%              if host_interfaces[host_interface].monitor == true %}
+  switchport monitor
+{%              endif %}
+{%          endif %}
+{%          if host_interfaces[host_interface].state_enabled is defined %}
+{%              if host_interfaces[host_interface].state_enabled == true %}
+  no shutdown
+{%              else %}
+  shutdown
+{%              endif %}
+{%          endif %}
+{%      endfor %}
+{%  endif %}

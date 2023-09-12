@@ -1,0 +1,50 @@
+{%  if platform_policy_maps is defined %}
+{%      for platform_policy_map in platform_policy_maps %}
+{%          if platform_policy_map == "qos" %}
+{%              for policy in platform_policy_maps[platform_policy_map].policy %}
+policy-map type {{ platform_policy_map }} {{ policy }}
+{%                  for class in platform_policy_maps[platform_policy_map].policy[policy].class %}
+  class {{ class }}
+{%                      if platform_policy_maps[platform_policy_map].policy[policy].class[class].group is defined %}
+    set qos-group {{ platform_policy_maps[platform_policy_map].policy[policy].class[class].group }}
+{%                      endif %}
+{%                      if platform_policy_maps[platform_policy_map].policy[policy].class[class].dscp is defined %}
+    set dscp {{ platform_policy_maps[platform_policy_map].policy[policy].class[class].dscp }}
+{%                      endif %}
+{%                  endfor %}
+{%              endfor %}
+{%          endif %}
+{%          if platform_policy_map == "queuing" %}
+{%              for policy in platform_policy_maps[platform_policy_map].policy %}
+policy-map type {{ platform_policy_map }} {{ policy }}
+{%                  for class in platform_policy_maps[platform_policy_map].policy[policy].class %}
+  class type {{ platform_policy_map}} {{ class }}
+{%                      if platform_policy_maps[platform_policy_map].policy[policy].class[class].priority is defined %}
+{%                          if platform_policy_maps[platform_policy_map].policy[policy].class[class].priority == true %}
+    priority
+{%                          endif %}
+{%                      endif %}
+{%                      if platform_policy_maps[platform_policy_map].policy[policy].class[class].bandwidth is defined %}
+    bandwidth percent {{ platform_policy_maps[platform_policy_map].policy[policy].class[class].bandwidth }}
+{%                      endif %}
+{%                  endfor %}
+{%              endfor %}
+{%          endif %}
+{%          if platform_policy_map == "network-qos" %}
+{%              for policy in platform_policy_maps[platform_policy_map].policy %}
+policy-map type {{ platform_policy_map }} {{ policy }}
+{%                  for class in platform_policy_maps[platform_policy_map].policy[policy].class %}
+  class type {{ platform_policy_map }} {{ class }}
+{%                      if platform_policy_maps[platform_policy_map].policy[policy].class[class].mtu is defined %}
+    mtu {{ platform_policy_maps[platform_policy_map].policy[policy].class[class].mtu }}
+{%                      endif %}
+{%                      if platform_policy_maps[platform_policy_map].policy[policy].class[class].no_drop is defined %}
+{%                          if platform_policy_maps[platform_policy_map].policy[policy].class[class].no_drop == true %}
+    pause no-drop
+{%                          endif %}
+{%                      endif %}
+{%                  endfor %}
+{%              endfor %}
+{%          endif %}
+{%      endfor %}
+{%  endif %}

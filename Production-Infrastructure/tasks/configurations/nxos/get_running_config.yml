@@ -1,0 +1,10 @@
+---
+
+- name: Get running configuration
+  nxos_command:
+    provider: "{{ nxoscli }}" 
+    commands: "show run"
+  register: running_config_results
+  check_mode: no
+
+- set_fact: running_config={{ running_config_results.stdout }}

@@ -1,0 +1,7 @@
+---
+
+- name: Create IOS DHCP Servers
+  ios_config: 
+    src: ../../templates/configurations/ios/02_ios_dhcp.j2
+    provider: "{{ ioscli }}" 
+  register: global_config_results 

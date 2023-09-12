@@ -1,0 +1,58 @@
+---
+- hosts: OSPFP2P
+  serial: 1
+
+  vars_prompt:
+   - name: output_file
+     prompt: please enter output filename
+     private: no
+  
+  tasks:
+  - import_tasks: ospfneighbors.yml
+
+- hosts: DIST01
+  tasks:
+  - name: configure DIST01
+    ios_config:
+      lines:
+        -  no ip ospf network point-to-point
+      parents: interface Port-channel1
+      provider: "{{ ioscli }}"
+     
+- hosts: CORE
+  tasks:
+  - name: configure CORE-Po1
+    ios_config:
+      lines:
+        -  no ip ospf network point-to-point
+      parents: interface Port-channel1
+      provider: "{{ ioscli }}"
+     
+- hosts: DIST02
+  tasks:
+  - name: configure DIST02
+    ios_config:
+      lines:
+        -  no ip ospf network point-to-point
+      parents: interface Port-channel1
+      provider: "{{ ioscli }}"
+  
+- hosts: CORE
+  tasks:
+  - name: configure CORE-Po2
+    ios_config:
+      lines:
+        -  no ip ospf network point-to-point
+      parents: interface Port-channel2
+      provider: "{{ ioscli }}"
+
+- hosts: OSPFP2P
+  serial: 1
+
+  vars_prompt:
+   - name: output_file
+     prompt: please enter output filename
+     private: no
+  
+  tasks:
+  - import_tasks: ospfneighbors.yml

@@ -1,0 +1,7 @@
+---
+
+  - name: Assembled NXOS Configuration for Data Centre
+    nxos_config: 
+      src: '../../templates/configurations/nxos_combined/assembled-config-data-centre.j2'
+      provider: "{{ nxoscli }}" 
+    register: global_config_results 

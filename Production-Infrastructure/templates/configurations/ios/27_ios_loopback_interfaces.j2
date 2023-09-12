@@ -1,0 +1,13 @@
+{%  if platform_defaults.type == 6000 %}
+{%      for host_loopback_interface in host_loopback_interfaces %}
+interface {{ host_loopback_interface }}
+ description {{ host_loopback_interfaces[host_loopback_interface].description }}
+{%          if host_loopback_interfaces[host_loopback_interface].vrf is defined %}
+ vrf forwarding {{ host_loopback_interfaces[host_loopback_interface].vrf }}
+{%          endif %}
+ ip address {{ host_loopback_interfaces[host_loopback_interface].ip }} {{ host_loopback_interfaces[host_loopback_interface].subnet_mask }}
+{%          if host_loopback_interfaces[host_loopback_interface].pim is defined %}
+ ip pim {{ host_loopback_interfaces[host_loopback_interface].pim }}
+{%          endif %}
+{%      endfor %}
+{%  endif %}

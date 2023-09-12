@@ -1,0 +1,195 @@
+---
+
+platform_defaults:
+  type: 4000 
+
+platform_qos:
+  class_maps:
+    Qos-Scavenger:
+       dscp:
+          - cs1
+  
+    Qos-Priority:
+       dscp:
+          - ef
+          - cs5
+          - cs4
+    
+    Qos-SECURITY+NTWK-CTRL:
+       dscp:
+          - cs2
+          - cs3
+          - cs6
+          - cs7
+  
+  policy_maps:
+    QoS-OUT-PO-Members:
+      classes:
+        Qos-Priority:
+          priority: true
+    
+        Qos-SECURITY+NTWK-CTRL:
+          bandwidth: 25
+    
+        Qos-Scavenger:
+          bandwidth: 5
+    
+        class-default:
+          bandwidth: 60
+          dbl: true
+    
+    QoS-OUT-PO-Access-1GE:
+      classes:
+        Qos-Priority:
+          cir: 200000000
+    
+    QoS-OUT-PO-Core:
+      classes:
+        Qos-Priority:
+          cir: 2000000000
+    
+    QoS-OUT-PO-Access-10GE:
+      classes:
+        Qos-Priority:
+          cir: 2000000000
+    
+    QoS-IN:
+      classes:
+        Qos-Priority:
+          null: true
+    
+        Qos-SECURITY+NTWK-CTRL:
+          null: true
+    
+        Qos-Scavenger:
+          null: true
+    
+        class-default:
+          null: true
+    
+    QoS-IN-Legacy_VLANs:
+      classes:
+        class-default:
+          set_default: true
+
+platform_port_channels:
+  Port-channel1:
+    port_channel: 1
+    description: Core Uplink
+    point_to_point: true
+    service_policy:
+      input: QoS-IN
+      output: QoS-OUT-PO-Core
+    vnet_list: true
+    lacp_mode: "active"
+
+    Dist01:
+      ip_address: "172.20.10.2 255.255.255.252"
+      members: 
+        TenGigabitEthernet1/1/1:
+          ip_address: false
+          switchport: false
+          service_policy:
+            output: QoS-OUT-PO-Members
+
+        TenGigabitEthernet2/1/1:
+          ip_address: false
+          switchport: false
+          service_policy:
+            output: QoS-OUT-PO-Members
+
+    Dist02:
+      ip_address: "172.20.20.2 255.255.255.252"
+      members: 
+        TenGigabitEthernet1/1/1:
+          ip_address: false
+          switchport: false
+          service_policy:
+            output: QoS-OUT-PO-Members
+
+        TenGigabitEthernet2/1/1:
+          ip_address: false
+          switchport: false
+          service_policy:
+            output: QoS-OUT-PO-Members
+
+  Port-channel50:
+    port_channel: 50
+    description: VSL
+    switchport: true
+    switchport_mode: trunk
+    vsl: 1
+    lacp_mode: "on"
+    lldp_transmit: false
+    lldp_receive: false
+    Dist01:
+      members: 
+        TenGigabitEthernet1/1/15:       
+
+        TenGigabitEthernet1/1/16:
+
+    Dist02:
+      members: 
+        TenGigabitEthernet1/1/15:      
+
+        TenGigabitEthernet1/1/16:
+
+  Port-channel60:
+    port_channel: 60
+    description: VSL
+    switchport: true
+    switchport_mode: trunk
+    vsl: 2
+    lacp_mode: "on"
+    lldp_transmit: false
+    lldp_receive: false
+    Dist01:
+      members: 
+        TenGigabitEthernet2/1/15:     
+
+        TenGigabitEthernet2/1/16:
+ 
+    Dist02:
+      members: 
+        TenGigabitEthernet2/1/15:      
+
+        TenGigabitEthernet2/1/16:
+
+  Port-channel100:
+    port_channel: 100
+    description: LegacyVLANs
+    switchport: true
+    switchport_mode: trunk
+    lacp_mode: "active"
+    Dist01:
+      vlans: 100,200
+      service_policy:
+        input: QoS-IN-Legacy_VLANs
+      members: 
+        TenGigabitEthernet1/1/13:       
+
+        TenGigabitEthernet2/1/13:
+
+    Dist02:
+      vlans: 100,200
+      service_policy:
+        input: QoS-IN-Legacy_VLANs
+      members: 
+        TenGigabitEthernet1/1/13:     
+
+        TenGigabitEthernet2/1/13:
+
+platform_interfaces:
+  Dist01:
+    TenGigabitEthernet1/1/14:
+      type: DAD
+
+    TenGigabitEthernet2/1/14:
+      type: DAD
+
+  Dist02:
+    TenGigabitEthernet1/1/14:
+      type: DAD
+
+    TenGigabitEthernet2/1/14:
+      type: DAD

@@ -1,0 +1,7 @@
+---
+
+  - name: Create IOS MCQ QoS
+    ios_config: 
+      src: ../../templates/configurations/ios/13_ios_mcq_qos.j2
+      provider: "{{ ioscli }}" 
+    register: global_config_results 

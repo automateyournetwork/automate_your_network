@@ -1,0 +1,7 @@
+---
+
+  - name: Create IOS 6K QoS 
+    ios_config: 
+      src: ../../templates/configurations/ios/12_ios_6k_qos.j2
+      provider: "{{ ioscli }}" 
+    register: global_config_results 

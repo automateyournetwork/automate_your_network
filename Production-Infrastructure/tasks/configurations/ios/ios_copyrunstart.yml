@@ -1,0 +1,6 @@
+---
+- name: Copy Run Start
+  ios_command:
+    commands: wr
+    timeout: 30
+    provider: "{{ ioscli }}"

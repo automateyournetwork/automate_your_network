@@ -1,0 +1,17 @@
+{%  if host_defaults.hostname == "CORE" %}
+switch virtual domain 100 
+ switch mode virtual
+ standby port delay 300
+ standby port bringup 20 5
+ vsl-encryption
+ switch 1 priority 255
+ switch 2 priority 1
+ mac-address use-virtual
+{%  else %}
+switch virtual domain {{ host_defaults.site_id }}
+ switch mode virtual
+ vsl-encryption
+ switch 1 priority 255
+ switch 2 priority 1
+ mac-address use-virtual
+{%  endif %}

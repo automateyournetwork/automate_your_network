@@ -1,0 +1,17 @@
+{%  if platform_interfaces is defined %}
+{%      for interface in platform_interfaces[inventory_hostname] %}
+{%         if platform_interfaces[inventory_hostname][interface].type == "DAD" %}
+interface {{ interface }}
+{%             if platform_defaults.type == 6000 %}
+ description DAD
+ no switchport
+ no ip address
+ no cdp enable
+ dual-active fast-hello
+{%             else %}
+ description DAD
+ dual-active fast-hello
+{%             endif %}
+{%          endif %}
+{%      endfor %}
+{%  endif %}

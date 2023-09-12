@@ -1,0 +1,181 @@
+---
+
+platform_defaults:
+  type: 3750
+       
+platform_qos:
+  platform_interface_values:
+    srr_queue_share: "10 25 60 5"
+    srr_queue_shape: "10 0 0 0" 
+  maps:
+    policed-dscp: 
+      value: "24 46 to 8"
+  
+    cos-dscp: 
+      value: "0 8 16 24 32 46 48 56"
+  bandwidth:
+    input: "90 10"
+  srr_queues:
+    input:
+      types:
+        cos-map:
+          maps:
+            "1":
+              map_values: 
+              - "2 3"
+              - "3 6 7"
+    
+            "2":
+              map_values:
+              - "3 4 5"     
+  
+        dscp-map:
+          maps:
+            "1":
+              map_values:
+              - "2 24"
+              - "3 48 56"
+    
+            "2":
+              map_values:
+              - "3 32 40 46"
+    
+    output:
+      types:
+        cos-map:
+          maps:
+            "1":
+              map_values:
+              - "1 4"
+    
+            "2":
+              map_values:
+              - "1 2 3 6 7"    
+    
+            "3":
+              map_values:
+              - "1 0"
+    
+            "4":
+              map_values:
+              - "1 1"
+    
+        dscp-map:
+          maps:
+            "1":
+              map_values:
+              - "1 32"
+    
+            "2":
+              map_values:
+              - "1 16 18 20 22 24 26 28 30"
+              - "1 34 36 38 48 56"
+    
+            "3":
+              map_values:
+              - "1 0"
+    
+            "4":
+              map_values:
+              - "1 2 4 6 8 10 12 14 42"
+              - "1 44"
+  
+  queue_set_thresholds:
+    output:
+      types:
+        threshold:
+          maps:
+            "1":
+              map_values:
+              - "100 100 100 100"
+    
+            "2": 
+              map_values:
+              - "3100 3100 100 3100"
+    
+            "3":
+              map_values:
+              - "3100 3100 100 3100"
+
+  queue_set_buffers:
+    output:
+      types:
+        buffers:
+          maps:
+            "1":
+              map_values:
+              - "10 25 60 5"
+
+  class_maps:
+    Qos-RADIO:
+      type: any
+      match: "access-group name RADIO_Subnet"
+    
+    Qos-Skype-VoIP-Audio:
+      type: all
+      match: "access-group name ACL-Skype-VoIP-Audio"
+    
+    Qos-Internetwork-Control:
+      type: any
+      match: "ip dscp cs6"
+    
+    Qos-Video:
+      type: any
+      match: "ip dscp cs4"
+    
+    Qos-Skype-VoIP-Signalling:
+      type: all
+      match: "access-group name ACL-Skype-VoIP-Signalling"
+    
+    Qos-VoIP-Data:
+      type: any
+      match: "ip dscp ef"
+    
+    Qos-VoIP-Signalling:
+      type: any
+      match: "ip dscp cs3"
+    
+    Qos-SECURITY:
+      type: any
+      match: "access-group name SECURITY_Subnet"
+    
+    Qos-network-Control:
+      type: any
+      match: "ip dscp cs7"
+  
+  policy_maps:
+    QoS-IN:
+      classes:
+        Qos-network-Control:
+          set: "dscp cs7"
+        
+        Qos-Internetwork-Control:
+          set: "dscp cs6"
+        
+        Qos-VoIP-Data:
+          set: "dscp ef"
+          police: "128000 9600"
+        
+        Qos-VoIP-Signalling:
+          set: "dscp cs3"
+          police: "32000 8000"
+          
+        Qos-Video:
+          set: "dscp cs4"
+        
+        Qos-SECURITY:
+          set: "dscp cs2"
+        
+        Qos-Skype-VoIP-Audio:
+          set: "dscp ef"
+          police: "128000 9600"
+        
+        Qos-Skype-VoIP-Signalling:
+          set: "dscp cs3"
+          police: "32000 8000"
+        
+        Qos-RADIO:
+          trust: dscp
+        
+        class-default:
+          set: "dscp default"

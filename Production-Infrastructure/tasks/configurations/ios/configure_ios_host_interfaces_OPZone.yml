@@ -1,0 +1,7 @@
+---
+
+  - name: Create IOS Host Interface - OPZone - configuration 
+    ios_config: 
+      src: ../../templates/configurations/ios/30_ios_host_interfaces_OPZone.j2
+      provider: "{{ ioscli }}" 
+    register: global_config_results 

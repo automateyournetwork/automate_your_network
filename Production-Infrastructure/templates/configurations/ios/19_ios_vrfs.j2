@@ -1,0 +1,17 @@
+{% if platform_defaults.type == 6000 or platform_defaults.type == 4000 %}
+{%     for host_vrf in host_vrfs %}
+{%         if host_vrf == "global" %}
+{%         else %}
+vrf definition {{ host_vrf }}
+{%         endif %}
+{%         if host_vrf == "global" %}
+{%         else %}
+ vnet tag {{ host_vrfs[host_vrf].tag }}
+ address-family ipv4
+ exit-address-family
+{%         endif %}
+{%         if host_vrfs[host_vrf].multicast is defined %}
+ip multicast-routing vrf {{ host_vrf }}
+{%         endif %}
+{%     endfor %} 
+{% endif %}

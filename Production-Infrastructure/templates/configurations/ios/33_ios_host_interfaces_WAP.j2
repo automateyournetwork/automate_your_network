@@ -1,0 +1,43 @@
+{%  if host_interfaces is defined %}
+{%      for host_interface in host_interfaces %}
+{%          if host_interfaces[host_interface].type is defined %}
+{%              if host_interfaces[host_interface].type == "WAP" %}
+interface {{ host_interface }}
+ switchport mode access
+ switchport nonegotiate
+ switchport access vlan 3
+{%                  if platform_defaults.type == 3750 %}
+ switchport port-security violation  restrict
+{%                  else %}
+{%                      if platform_defaults.type == 3850 %}
+ switchport port-security violation restrict
+{%                      endif %}
+{%                  endif %}
+ switchport port-security mac-address sticky
+ switchport port-security aging time 720
+ switchport port-security aging type inactivity
+ switchport port-security
+{%              if platform_defaults.type == 3750 or platform_defaults.type == 2960 %}
+{%                  if platform_defaults.role is not defined %}
+{%                      if host_interfaces[host_interface].srr_queue_share is defined %}
+ srr-queue bandwidth share {{ platform_qos.platform_interface_values.srr_queue_share }}
+{%                          if platform_defaults.type == 2960 %}
+ srr-queue bandwidth shape {{ platform_qos.platform_interface_values.srr_queue_shape }}
+{%                          else %}
+ srr-queue bandwidth shape  {{ platform_qos.platform_interface_values.srr_queue_shape }}
+{%                          endif %}
+ priority-queue out
+{%                      endif %}
+{%                  endif %}
+{%              endif %}
+ storm-control broadcast level 30.00
+ storm-control multicast level 30.00
+ no lldp transmit
+ no lldp receive
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+ service-policy input PM-QoS-IN
+{%              endif %}
+{%          endif %}
+{%      endfor %}
+{%  endif %}

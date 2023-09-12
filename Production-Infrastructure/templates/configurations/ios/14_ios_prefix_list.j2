@@ -1,0 +1,7 @@
+{%  if host_prefix_lists is defined %}
+{%      for host_prefix_list in host_prefix_lists %}
+{%          for list in host_prefix_lists[host_prefix_list].lists %}
+ip prefix-list {{ host_prefix_list }} seq {{ list }} {{ host_prefix_lists[host_prefix_list].lists[list].permission }} {{ host_prefix_lists[host_prefix_list].lists[list].network }}
+{%          endfor %}
+{%      endfor %}
+{%  endif %}

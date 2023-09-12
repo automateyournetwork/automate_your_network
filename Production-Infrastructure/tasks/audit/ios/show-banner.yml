@@ -1,0 +1,8 @@
+---
+- name: run show banner
+  ios_command:
+    commands: show banner motd
+    provider: "{{ ioscli }}"
+  register: show-banner_result
+
+- set_fact: show-banner={{ show-banner_result.stdout_lines | to_nice_yaml }}

@@ -1,0 +1,7 @@
+---
+
+  - name: Create IOS Route Maps
+    ios_config: 
+      src: ../../templates/configurations/ios/15_ios_route_maps.j2
+      provider: "{{ ioscli }}" 
+    register: global_config_results 

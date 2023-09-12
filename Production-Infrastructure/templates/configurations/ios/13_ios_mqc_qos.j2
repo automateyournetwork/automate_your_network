@@ -1,0 +1,70 @@
+{%  if platform_defaults.type == 3850 %}
+{%      for table_map in platform_qos.table_maps %}
+table-map {{ table_map }}
+{%          for map in platform_qos.table_maps[table_map].maps %}
+ map from {{ map }}
+{%          endfor %}
+ default copy
+{%      endfor %}
+{%  endif %}
+{%  if platform_defaults.type == 4000 or platform_defaults.type == 3850 %}
+{%      for class_map in platform_qos.class_maps %}
+class-map match-any {{ class_map }}
+{%          if platform_qos.class_maps[class_map].dscp is defined %}
+{%              for dscp in platform_qos.class_maps[class_map].dscp %}
+ match dscp {{ dscp }}
+{%              endfor %}
+{%          endif %}
+{%          if platform_qos.class_maps[class_map].acl is defined %}
+ match access-group name {{ platform_qos.class_maps[class_map].acl }}
+{%          endif %}
+{%          if platform_qos.class_maps[class_map].cos is defined %}
+{%              for cos in platform_qos.class_maps[class_map].cos %}
+ match cos  {{ cos }}
+{%              endfor %}
+{%          endif %}
+{%      endfor %}
+{%      for policy_map in platform_qos.policy_maps %}
+policy-map {{ policy_map }}
+{%          for class in platform_qos.policy_maps[policy_map].classes %}
+ class {{ class }}
+{%              if platform_qos.policy_maps[policy_map].classes[class].priority is defined %}
+  priority
+{%              endif %}
+{%              if platform_qos.policy_maps[policy_map].classes[class].dscp is defined %}
+  set dscp {{ platform_qos.policy_maps[policy_map].classes[class].dscp }}
+{%              endif %}
+{%              if platform_qos.policy_maps[policy_map].classes[class].cir is defined %}
+{%                  if platform_qos.policy_maps[policy_map].classes[class].bc is defined %}
+  police cir {{ platform_qos.policy_maps[policy_map].classes[class].cir }} bc {{ platform_qos.policy_maps[policy_map].classes[class].bc }}
+{%                  else %}
+  police cir {{ platform_qos.policy_maps[policy_map].classes[class].cir }}
+{%                  endif %}
+{%                  if platform_qos.policy_maps[policy_map].classes[class].conform is defined %}
+   conform-action transmit 
+{%                  endif %}
+{%                  if platform_qos.policy_maps[policy_map].classes[class].drop is defined %}
+   exceed-action drop 
+{%                  endif %}
+{%                  if platform_qos.policy_maps[policy_map].classes[class].exceed is defined %}
+   exceed-action set-dscp-transmit dscp table Policed-DSCP
+{%                  endif %}
+{%                  if platform_qos.policy_maps[policy_map].classes[class].drop is defined %}
+   exceed-action drop 
+{%                  endif %}
+{%              endif %}
+{%              if platform_qos.policy_maps[policy_map].classes[class].priority_level is defined %}
+  priority level {{ platform_qos.policy_maps[policy_map].classes[class].priority_level }}
+{%              endif %}
+{%              if platform_qos.policy_maps[policy_map].classes[class].bandwidth is defined %}
+  bandwidth remaining percent {{ platform_qos.policy_maps[policy_map].classes[class].bandwidth }}
+{%              endif %}
+{%              if platform_qos.policy_maps[policy_map].classes[class].dbl is defined %}
+    dbl
+{%              endif %}
+{%              if platform_qos.policy_maps[policy_map].classes[class].set_default is defined %}
+  set dscp default 
+{%              endif %}
+{%          endfor %}
+{%      endfor %}
+{%  endif %}

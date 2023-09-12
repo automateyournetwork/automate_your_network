@@ -1,0 +1,7 @@
+---
+
+  - name: Create IOS OSPF
+    ios_config: 
+      src: ../../templates/configurations/ios/21_ios_ospf.j2
+      provider: "{{ ioscli }}" 
+    register: global_config_results 

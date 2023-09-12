@@ -1,0 +1,22 @@
+{%  for snmp_community in global_campus_defaults.snmp_communities %}
+snmp-server community {{ snmp_community }} {{ global_campus_defaults.snmp_communities[snmp_community].type }}
+{%  endfor %}
+{%  if host_defaults.snmp_engineid is defined %}
+snmp-server engineID local {{ host_defaults.snmp_engineid }}
+{%  endif %}
+{%  if host_defaults.snmp_server_location is defined %}
+snmp-server location {{ host_defaults.snmp_server_location }}
+{%  endif %}
+snmp ifmib ifindex persist
+snmp-server enable traps snmp authentication linkdown linkup coldstart warmstart
+snmp-server enable traps config
+snmp-server enable traps entity
+snmp-server enable traps envmon fan shutdown supply temperature status
+{%  for snmp_host in global_campus_defaults.snmp_hosts %}
+{%      for community in global_campus_defaults.snmp_hosts[snmp_host].communities %}
+snmp-server host {{ snmp_host }} {{ community }}
+{%      endfor %}
+{%  endfor %}
+{%  if platform_defaults.type != 2960 %}
+snmp mib persist cbqos
+{%  endif %}

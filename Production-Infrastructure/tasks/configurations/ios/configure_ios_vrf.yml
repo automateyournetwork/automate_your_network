@@ -1,0 +1,7 @@
+---
+
+- name: Create IOS VRF configuration 
+  ios_config: 
+    src: ../../templates/configurations/ios/19_ios_vrfs.j2
+    provider: "{{ ioscli }}" 
+  register: global_config_results 

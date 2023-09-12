@@ -1,0 +1,97 @@
+{%  if platform_port_channels is defined %}
+{%      for platform_port_channel in platform_port_channels %}
+interface {{ platform_port_channel }}
+ description {{ platform_port_channels[platform_port_channel].description }}
+{%          if platform_port_channels[platform_port_channel].vnet_list is defined %}
+ vnet trunk list {{ inventory_hostname }}
+{%          endif %}
+{%          if platform_port_channels[platform_port_channel][inventory_hostname].ip_address is defined %}
+ ip address {{ platform_port_channels[platform_port_channel][inventory_hostname].ip_address }}
+{%          endif %}
+{%          if platform_port_channels[platform_port_channel][inventory_hostname].message_digest_key is defined %}
+ ip ospf message-digest-key 1 md5 7 {{ platform_port_channels[platform_port_channel][inventory_hostname].message_digest_key }}
+{%          endif %}
+{%          if platform_port_channels[platform_port_channel][inventory_hostname].pim is defined %}
+ ip pim {{ platform_port_channels[platform_port_channel][inventory_hostname].pim }}
+{%          endif %}
+{%          if platform_port_channels[platform_port_channel].point_to_point is defined %}
+ ip ospf network point-to-point
+{%          endif %}
+{%          if platform_port_channels[platform_port_channel].service_policy is defined %}
+{%              if platform_port_channels[platform_port_channel].service_policy.input is defined %}
+ service-policy input {{ platform_port_channels[platform_port_channel].service_policy.input }}
+{%              endif %}
+{%              if platform_port_channels[platform_port_channel].service_policy.output is defined %}
+ service-policy output {{ platform_port_channels[platform_port_channel].service_policy.output }}
+{%              endif %}
+{%          endif %}
+{%          if platform_port_channels[platform_port_channel].switchport is defined %}
+{%              if platform_port_channels[platform_port_channel].switchport == true %}
+ switchport
+ switchport mode {{ platform_port_channels[platform_port_channel].switchport_mode }}
+ switchport nonegotiate
+{%              else %}
+ no switchport
+{%              endif %}
+{%          endif %}
+{%          if platform_port_channels[platform_port_channel].guard_root is defined %}
+ spanning-tree guard root
+{%          endif %}
+{%          if platform_port_channels[platform_port_channel].ip_address is defined %}
+{%              if platform_port_channels[platform_port_channel].ip_address == "false" %}
+ no ip address
+{%              endif %}
+{%          endif %}
+{%          if platform_port_channels[platform_port_channel].vsl is defined %}
+ switch virtual link {{ platform_port_channels[platform_port_channel].vsl }}
+{%             if platform_defaults.type == "6000" %}
+ no platform qos channel-consistency
+{%             else %}
+{%             endif %}
+{%          endif %}
+{%          for member in platform_port_channels[platform_port_channel][inventory_hostname].members %}
+interface {{ member }}
+ description {{ platform_port_channels[platform_port_channel].description }}
+{%              if platform_port_channels[platform_port_channel][inventory_hostname].members[member].switchport is defined %}
+{%                  if platform_port_channels[platform_port_channel][inventory_hostname].members[member].switchport == false %}
+ no switchport 
+{%                  else %}
+ switchport 
+{%                  endif %}
+{%              endif %}
+{%              if platform_port_channels[platform_port_channel].switchport_mode is defined %}
+ switchport mode {{ platform_port_channels[platform_port_channel].switchport_mode }}
+ switchport nonegotiate
+{%              endif %}
+{%              if platform_port_channels[platform_port_channel][inventory_hostname].members[member].ip_address is defined %}
+{%                  if platform_port_channels[platform_port_channel][inventory_hostname].members[member].ip_address == false %}
+ no ip address
+{%                  endif %}
+{%              endif %}
+{%              if platform_port_channels[platform_port_channel].cdp is defined %}
+{%                  if platform_port_channels[platform_port_channel].cdp == false %}
+ no cdp enable
+{%                  endif %}
+{%              endif %}
+{%              if platform_port_channels[platform_port_channel].lldp_transmit is defined %}
+{%                  if platform_port_channels[platform_port_channel].lldp_transmit == false %}
+ no lldp transmit
+{%                  endif %}
+{%              endif %}
+{%              if platform_port_channels[platform_port_channel].lldp_receive is defined %}
+{%                  if platform_port_channels[platform_port_channel].lldp_receive == false %}
+ no lldp receive 
+{%                  endif %}
+{%              endif %}
+ channel-group {{ platform_port_channels[platform_port_channel].port_channel }} mode {{ platform_port_channels[platform_port_channel].lacp_mode }}
+{%              if platform_port_channels[platform_port_channel][inventory_hostname].members[member].service_policy is defined %}
+{%                  if platform_port_channels[platform_port_channel][inventory_hostname].members[member].service_policy.input is defined %}
+ service-policy input {{ platform_port_channels[platform_port_channel][inventory_hostname].members[member].service_policy.input }}
+{%                  endif %}
+{%                  if platform_port_channels[platform_port_channel][inventory_hostname].members[member].service_policy.output is defined %}
+ service-policy output {{ platform_port_channels[platform_port_channel][inventory_hostname].members[member].service_policy.output }}
+{%                  endif %}
+{%              endif %}
+{%          endfor %}
+{%      endfor %}
+{%  endif %}

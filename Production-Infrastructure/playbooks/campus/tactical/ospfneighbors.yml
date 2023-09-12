@@ -1,0 +1,40 @@
+---
+
+  - hosts: LAB-CAMPUS-DIST
+
+    tasks:
+      - name: run show ospf neighbors
+        ios_command:
+          commands: show ip ospf neighbor
+          provider: "{{ ioscli }}"
+        register: ospfneighbor_result
+
+      - set_fact: ospfneighbor={{ ospfneighbor_result.stdout_lines | to_nice_yaml }}
+
+      - name: create log file for all devices
+        file: path=../../../documentation/campus/running_config/{{ inventory_hostname }}.all.txt state=touch
+        check_mode: no
+
+      - name: log to file for all devices
+        lineinfile:
+          insertafter: EOF
+          path: ../../../documentation/campus/running_config/{{ inventory_hostname }}.all.txt
+          line: '{{ item }}'
+        with_items:
+          - "#####{{inventory_hostname}}#####"
+          - "{{ ospfneighbor }}"
+        check_mode: no
+
+      - name: create log file for each device
+        file: path=../../../documentation/campus/running_config/{{ inventory_hostname }}.txt state=touch
+        check_mode: no
+
+      - name: log to file for individual device
+        lineinfile:
+          insertafter: EOF
+          path: ../../../documentation/campus/running_config/{{ inventory_hostname }}.txt
+          line: '{{ item }}'
+        with_items:
+          - "#####{{inventory_hostname}}#####"
+          - "{{ ospfneighbor }}"
+        check_mode: no

@@ -1,0 +1,76 @@
+---
+  
+platform_access_lists:
+  ACL-Skype-VoIP-Audio:
+    rules:
+      1:
+        permit: true 
+        type: udp
+        source: 10.64.0.0
+        source_mask: 0.63.255.255
+        destination: 10.64.0.0
+        destination_mask:  0.63.255.255
+        start_range: 50020
+        end_range: 50039
+
+      2:
+        permit: true
+        type: udp
+        source: 10.64.0.0
+        source_mask: 0.63.255.255
+        destination: 10.204.6.0
+        destination_mask: 0.0.0.255
+        start_range: 50020
+        end_range: 50039    
+       
+  ACL-Skype-VoIP-Signalling:
+    rules:
+      1:
+        permit: true
+        type: tcp
+        source: 10.64.0.0
+        source_mask: 0.63.255.255
+        destination: 10.204.6.0
+        destination_mask: 0.0.0.255
+        start_range: 2000
+        end_range: 2002
+
+      2:
+        permit: true
+        type: tcp
+        source: 10.64.0.0
+        source_mask: 0.63.255.255
+        destination: 10.204.6.0
+        destination_mask: 0.0.0.255
+        start_range: 5060
+        end_range: 5061   
+
+      3:
+        permit: true
+        type: udp
+        source: 10.64.0.0
+        source_mask: 0.63.255.255
+        destination: 10.204.6.0
+        destination_mask: 0.0.0.255
+        start_range: 5060
+        end_range: 5061   
+
+  SECURITY_Subnet:
+    rules:
+      1:
+        permit: true
+        type: ip
+        source: 10.216.0.0
+        source_mask: 0.7.255.255
+        destination: 10.216.0.0
+        destination_mask: 0.7.255.255
+
+  RADIO_Subnet:
+    rules:
+      1:
+        permit: true
+        type: ip
+        source: 10.207.252.0
+        source_mask: 0.0.1.255
+        destination: 10.207.252.0
+        destination_mask: 0.0.1.255

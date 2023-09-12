@@ -1,0 +1,8 @@
+---
+
+- name: Create NXOS Platform Prefix List
+  nxos_config: 
+    src: ../../templates/configurations/nxos/04_nxos_platform_prefix_list.j2
+    provider: "{{ nxoscli }}" 
+  tags: vlan 
+  register: acls_config_results 

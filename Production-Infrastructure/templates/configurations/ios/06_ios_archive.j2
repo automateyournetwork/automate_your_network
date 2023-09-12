@@ -1,0 +1,18 @@
+archive
+ log config
+  logging enable
+  logging size 250
+  notify syslog contenttype plaintext
+  hidekeys
+{%  if platform_defaults.type == 6000 %}
+ path bootdisk:/config-archive/$t_$h_config
+{%  else %}
+{%      if platform_defaults.type == 4000 %}
+ path bootflash:/config-archive/$t_$h_config
+{%      else %}
+ path flash:/config-archive/$t_$h_config
+{%      endif %}
+{%  endif %}
+ maximum 5
+ write-memory
+ time-period 1440

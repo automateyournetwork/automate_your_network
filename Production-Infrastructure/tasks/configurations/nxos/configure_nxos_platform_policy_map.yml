@@ -1,0 +1,8 @@
+---
+
+- name: Create NXOS Platform Policy Map
+  nxos_config: 
+    src: ../../templates/configurations/nxos/07_nxos_platform_policy_map.j2
+    provider: "{{ nxoscli }}" 
+  tags: vlan 
+  register: acls_config_results 

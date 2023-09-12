@@ -1,0 +1,18 @@
+{%  if platform_defaults.type == 6000 %}
+{%         for host_vrf_list in host_vrf_lists %}
+vrf list {{ host_vrf_list }}
+{%             for list in host_vrf_lists[host_vrf_list].lists %}
+ member {{ list }}
+{%             endfor %}
+{%         endfor %}
+{%  else %}
+{%      if platform_defaults.type == 4000 %}
+vrf list {{ inventory_hostname }}
+{%          for host_vrf in host_vrfs %}
+{%             if host_vrf == "global" %}
+{%             else %}
+ member {{ host_vrf }}
+{%             endif %}
+{%          endfor %}
+{%      endif %}
+{%  endif %}

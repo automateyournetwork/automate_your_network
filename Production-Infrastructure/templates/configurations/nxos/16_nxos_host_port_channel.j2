@@ -1,0 +1,122 @@
+{%  if host_port_channels is defined %}
+{%      for host_port_channel in host_port_channels %}
+interface port-channel{{ host_port_channels[host_port_channel].port_channel }}
+{%          if host_port_channels[host_port_channel].description is defined %}
+  description {{ host_port_channels[host_port_channel].description }}
+{%          endif %}
+{%          if host_port_channels[host_port_channel].trunk is defined %}
+  switchport mode trunk 
+  switchport trunk native vlan {{ global_dc_defaults.native_vlan }}
+  switchport trunk allowed vlan {{ host_port_channels[host_port_channel].trunk.allowed_vlan }}
+{%          else %}
+{%              if host_port_channels[host_port_channel].private_vlan_trunk_promiscuous is defined %}
+  switchport mode private-vlan trunk promiscuous
+  switchport trunk allowed vlan none
+  switchport private-vlan trunk allowed vlan {{ host_port_channels[host_port_channel].private_vlan_trunk_promiscuous.allowed_vlan }}
+  switchport private-vlan mapping trunk {{ host_port_channels[host_port_channel].private_vlan_trunk_promiscuous.mapping }}
+{%              else %}
+{%                  if host_port_channels[host_port_channel].vlan is defined %}
+  switchport access vlan {{ host_port_channels[host_port_channel].vlan }}
+{%                  endif %}
+{%              endif %}
+{%          endif %}
+{%          if host_port_channels[host_port_channel].ip_address is defined %}
+  ip address {{ host_port_channels[host_port_channel].ip_address }}
+{%          endif %}
+{%          if host_port_channels[host_port_channel].switchport is defined %}
+{%              if host_port_channels[host_port_channel].switchport == false %}
+  no switchport
+{%              endif %}
+{%          endif %}
+{%          if host_port_channels[host_port_channel].speed is defined %}
+  speed {{ host_port_channels[host_port_channel].speed }}
+{%          endif %}
+{%          if host_port_channels[host_port_channel].vrf is defined %}
+  vrf member {{ host_port_channels[host_port_channel].vrf }}
+{%          endif %}
+{%          if host_port_channels[host_port_channel].state_enabled is defined %}
+{%              if host_port_channels[host_port_channel].state_enabled == true %}
+  no shutdown 
+{%              endif %}
+{%          endif %}
+{%          if host_port_channels[host_port_channel].members is defined %}
+{%              for member in host_port_channels[host_port_channel].members %}
+interface {{ member }}
+  description {{ host_port_channels[host_port_channel].members[member].description }}
+{%                  if host_port_channels[host_port_channel].trunk is defined %}
+  switchport mode trunk 
+  switchport trunk native vlan {{ global_dc_defaults.native_vlan }}
+  switchport trunk allowed vlan {{ host_port_channels[host_port_channel].trunk.allowed_vlan }}
+{%                  else %}
+{%                      if host_port_channels[host_port_channel].private_vlan_trunk_promiscuous is defined %}
+  switchport mode private-vlan trunk promiscuous
+  switchport trunk allowed vlan none
+  switchport private-vlan trunk allowed vlan {{ host_port_channels[host_port_channel].private_vlan_trunk_promiscuous.allowed_vlan }}
+  switchport private-vlan mapping trunk {{ host_port_channels[host_port_channel].private_vlan_trunk_promiscuous.mapping }}
+{%                      else %}
+{%                          if host_port_channels[host_port_channel].vlan is defined %}
+  switchport access {{ host_port_channels[host_port_channel].vlan }}
+{%                          endif %}
+{%                      endif %}
+{%                  endif %}
+{%                  if host_port_channels[host_port_channel].switchport is defined %}
+{%                      if host_port_channels[host_port_channel].switchport == false %}
+  no switchport 
+{%                      endif %}
+{%                  endif %}
+{%                  if host_port_channels[host_port_channel].lacp_active is defined %}
+  channel-group {{ host_port_channels[host_port_channel].port_channel }} 
+{%                  else %}
+  channel-group {{ host_port_channels[host_port_channel].port_channel }} mode active
+{%                  endif %}
+{%                  if host_port_channels[host_port_channel].speed is defined %}
+  speed {{ port_channel_intefaces[host_port_channel].speed }}
+{%                  endif %}
+{%                  if host_port_channels[host_port_channel].members[member].state_enabled is defined %}
+{%                      if host_port_channels[host_port_channel].members[member].state_enabled == true %}
+  no shutdown 
+{%                      endif %}
+{%                  endif %}
+{%              endfor %}
+{%          endif %}
+{%          if host_port_channels[host_port_channel].subinterfaces is defined %}
+{%              for subinterface in host_port_channels[host_port_channel].subinterfaces %}
+interface {{ subinterface }}
+{%          if host_port_channels[host_port_channel].subinterfaces[subinterface].description is defined %}
+  description {{ host_port_channels[host_port_channel].subinterfaces[subinterface].description }}
+{%          endif %}
+{%          if host_port_channels[host_port_channel].subinterfaces[subinterface].ip_address is defined %}
+  ip address {{ host_port_channels[host_port_channel].subinterfaces[subinterface].ip_address }}
+{%          endif %}
+  encapsulation dot1q {{ host_port_channels[host_port_channel].subinterfaces[subinterface].subinterface }}
+{%                  if host_port_channels[host_port_channel].subinterfaces[subinterface].ospf is defined %}
+{%                       if host_port_channels[host_port_channel].subinterfaces[subinterface].ospf == true %}
+  ip ospf authentication message-digest
+  ip ospf message-digest-key 1 md5 3 {{ host_port_channels[host_port_channel].subinterfaces[subinterface].message_digest_key }}
+  ip ospf network {{ platform_defaults.ospf_defaults.network }}
+{%                          if host_port_channels[host_port_channel].subinterfaces[subinterface].passive_interface is defined %}
+  ip ospf passive-interface
+{%                          else %}
+  no ip ospf passive-interface
+{%                          endif %}
+{%                      endif %}
+{%                  endif %}
+  ip router ospf {{ platform_defaults.ospf_defaults.ospf }} area {{ platform_defaults.ospf_defaults.area }}
+{%                  if host_port_channels[host_port_channel].subinterfaces[subinterface].speed is defined %}
+  speed {{ host_port_channels[host_port_channel].subinterfaces[subinterface].speed }}
+{%                  endif %}
+{%                  if host_port_channels[host_port_channel].subinterfaces[subinterface].vrf is defined %}
+  vrf member {{ host_port_channels[host_port_channel].subinterfaces[subinterface].vrf }}
+{%                  endif %}
+{%                  if host_port_channels[host_port_channel].subinterfaces[subinterface].ip_address is defined %}
+  ip address {{ host_port_channels[host_port_channel].subinterfaces[subinterface].ip_address }}
+{%                  endif %}
+{%                  if host_port_channels[host_port_channel].subinterfaces[subinterface].state_enabled is defined %}
+{%                      if host_port_channels[host_port_channel].subinterfaces[subinterface].state_enabled == true %}
+  no shutdown 
+{%                      endif %}
+{%                  endif %}
+{%              endfor %}
+{%          endif %}
+{%      endfor %}
+{%  endif %}

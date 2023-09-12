@@ -1,0 +1,9 @@
+- hosts: LAB-CAMPUS 
+  connection: local 
+  vars: 
+  tasks: 
+    - name: IOS Facts on LAB-CAMPUS 
+      register: ios_facts_output 
+      ios_facts: 
+        provider: "{{ ios_cli }}" 
+    - copy: content="{{ ios_facts_output | to_nice_json }}" dest="../documentation/campus/recon_playbooks/text/{{ inventory_hostname }}_ios_facts_output.json
